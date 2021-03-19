@@ -2,5 +2,6 @@ using CBLS
 using Test
 
 @testset "CBLS.jl" begin
-    # Write your tests here.
+    include("MOI_wrapper.jl")
+    include("JuMP.jl")
 end
