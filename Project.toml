@@ -1,7 +1,7 @@
 name = "CBLS"
 uuid = "a3809bfe-37bb-4d48-a667-bac4c6be8d90"
 authors = ["Jean-Francois Baffier"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
@@ -12,7 +12,7 @@ MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 [compat]
 JuMP = "0.21"
 Lazy = "0.15"
-LocalSearchSolvers = "0.2"
+LocalSearchSolvers = "0.3"
 MathOptInterface = "0.9"
 julia = "1.6"
 
