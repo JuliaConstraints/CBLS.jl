@@ -1,5 +1,6 @@
 module CBLS
 
+using Constraints
 using JuMP
 using Lazy
 using LocalSearchSolvers
