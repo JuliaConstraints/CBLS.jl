@@ -29,6 +29,10 @@ DOCSTRING
 mutable struct Optimizer <: MOI.AbstractOptimizer
     solver::LS.MainSolver
     status::MOI.TerminationStatusCode
+    int_vars::Set{Int}
+
+    # lower_bounds
+    # upper_bounds::
 end
 
 """
@@ -37,7 +41,7 @@ end
 DOCSTRING
 """
 function Optimizer(model = model(); options = Options())
-    Optimizer(solver(model, options = options), MOI.OPTIMIZE_NOT_CALLED)
+    Optimizer(solver(model, options = options), MOI.OPTIMIZE_NOT_CALLED, Set{Int}())
 end
 
 # forward functions from Solver
@@ -133,3 +137,8 @@ Base.copy(set::DiscreteSet) = DiscreteSet(copy(set.values))
 DOCSTRING
 """
 MOI.empty!(opt) = empty!(opt)
+
+
+function MOI.is_valid(optimizer::Optimizer, index::CI{SVF, MOI.Integer})
+    return index.value ∈ optimizer.int_vars
+end
