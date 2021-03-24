@@ -51,31 +51,28 @@ end
 function MOI.add_constraint(optimizer::Optimizer, v::SVF, lt::MOI.LessThan{T}
 ) where {T <: AbstractFloat}
     vidx = MOI.index_value(v.variable)
-    a = (-Inf, false)
-    b = (lt.upper, true)
-    _set_domain!(optimizer, vidx, a, b)
+    d = make_domain(typemin(Int), lt.upper, Val(:range))
+    update_domain!(optimizer, vidx, d)
     return CI{SVF,MOI.LessThan{T}}(vidx)
 end
 
 function MOI.add_constraint(optimizer::Optimizer, v::SVF, gt::MOI.GreaterThan{T}
 ) where {T <: AbstractFloat}
     vidx = MOI.index_value(v.variable)
-    a = (gt.upper, true)
-    b = (Inf, false)
-    _set_domain!(optimizer, vidx, a, b)
+    d = make_domain(gt.lower, typemax(Int), Val(:range))
+    update_domain!(optimizer, vidx, d)
     return CI{SVF,MOI.GreaterThan{T}}(vidx)
 end
 
-make_set_domain(opt, id, a, b, ::Val{:range}) = _set_domain!(opt, id, a:b)
-make_set_domain(opt, id, a, b, ::Val{:inter}) = _set_domain!(opt, id, (a, true), (b, true))
+make_domain(a, b, ::Val{:range}) = domain(Int(a):Int(b))
+make_domain(a, b, ::Val{:inter}) = domain((a, true), (b, true))
 
 function MOI.add_constraint(optimizer::Optimizer, v::SVF, i::MOI.Interval{T}
 ) where {T <: Real}
-    @info "interval MOI " i
     vidx = MOI.index_value(v.variable)
-    @warn "test index"  MOI.is_valid(optimizer, CI{SVF, MOI.Integer}(vidx))
     is_int = MOI.is_valid(optimizer, CI{SVF, MOI.Integer}(vidx))
-    make_set_domain(optimizer, vidx, i.lower, i.upper, Val(is_int ? :range : :inter))
+    d = make_domain(i.lower, i.upper, Val(is_int ? :range : :inter))
+    _set_domain!(optimizer, vidx, d)
     return CI{SVF,MOI.Interval{T}}(vidx)
 end
 
@@ -95,6 +92,5 @@ MOI.supports_constraint(::Optimizer, ::Type{SVF}, ::Type{<:MOI.Integer}) = true
 function MOI.add_constraint(optimizer::Optimizer, v::SVF, ::MOI.Integer)
     vidx = MOI.index_value(v.variable)
     push!(optimizer.int_vars, vidx)
-    @info "integer " v MOI.ConstraintIndex{SVF,MOI.Integer}(vidx)
     return MOI.ConstraintIndex{SVF,MOI.Integer}(vidx)
 end
