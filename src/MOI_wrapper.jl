@@ -48,7 +48,7 @@ end
 @forward Optimizer.solver LS.variable!, LS._set_domain!, LS.constraint!, LS.solution
 @forward Optimizer.solver LS.max_domains_size, LS.objective!, Base.empty!, LS._inc_cons!
 @forward Optimizer.solver LS._best_bound, LS.best_value, LS.is_sat, LS.get_value
-@forward Optimizer.solver LS.domain_size, LS.best_values, LS._max_cons
+@forward Optimizer.solver LS.domain_size, LS.best_values, LS._max_cons, LS.update_domain!
 
 # forward functions from Solver (from Options)
 @forward Optimizer.solver LS._verbose, LS._dynamic, LS.dynamic!, LS._iteration, LS._threads
