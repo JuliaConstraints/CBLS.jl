@@ -86,7 +86,7 @@ MOI.is_empty(model::Optimizer) = LS._is_empty(model.solver)
 """
 Copy constructor for the optimizer
 """
-# MOIU.supports_default_copy_to(::Optimizer, copy_names::Bool) = !copy_names
+MOIU.supports_default_copy_to(::Optimizer, copy_names::Bool) = false
 function MOI.copy_to(model::Optimizer, src::MOI.ModelLike; kws...)
     return MOIU.automatic_copy_to(model, src; kws...)
 end
