@@ -70,32 +70,33 @@ end
 function MOI.add_constraint(optimizer::Optimizer, v::SVF, lt::MOI.LessThan{T}
     ) where {T <: AbstractFloat}
         vidx = MOI.index_value(v.variable)
-        if MOI.is_valid(optimizer, CI{SVF, MOI.Integer}(vidx))
+        push!(optimizer.compare_vars, vidx)
+        if vidx ∈ optimizer.int_vars
             d = make_domain(typemin(Int), lt.upper, Val(:range))
         else
-            a = (-Inf, false)
+            a = (Float64(floatmin(Float32)), false)
             b = (lt.upper, true)
             d = make_domain(a, b, Val(:inter))
         end
         update_domain!(optimizer, vidx, d)
         return CI{SVF,MOI.LessThan{T}}(vidx)
     end
-    
+
     function MOI.add_constraint(optimizer::Optimizer, v::SVF, gt::MOI.GreaterThan{T}
     ) where {T <: AbstractFloat}
         vidx = MOI.index_value(v.variable)
-        @info "is_int" MOI.is_valid(optimizer, CI{SVF, MOI.Integer}(vidx))
-        if MOI.is_valid(optimizer, CI{SVF, MOI.Integer}(vidx))
+        push!(optimizer.compare_vars, vidx)
+        if vidx ∈ optimizer.int_vars
             d = make_domain(gt.lower, typemax(Int), Val(:range))
         else
             a = (gt.lower, true)
-            b = (Inf, false)
+            b = (Float64(floatmax(Float32)), false)
             d = make_domain(a, b, Val(:inter))
         end
         update_domain!(optimizer, vidx, d)
         return CI{SVF,MOI.GreaterThan{T}}(vidx)
     end
-    
+
     make_domain(a, b, ::Val{:range}) = domain(Int(a):Int(b))
     make_domain(a::Real, b::Real, ::Val{:inter}) = domain((a, true), (b, true))
     make_domain(a::Tuple, b::Tuple, ::Val{:inter}) = domain(a, b)
@@ -126,5 +127,9 @@ MOI.supports_constraint(::Optimizer, ::Type{SVF}, ::Type{<:MOI.Integer}) = true
 function MOI.add_constraint(optimizer::Optimizer, v::SVF, ::MOI.Integer)
     vidx = MOI.index_value(v.variable)
     push!(optimizer.int_vars, vidx)
+    if vidx ∈ optimizer.compare_vars
+        x = get_variable(optimizer, vidx)
+        _set_domain!(optimizer, vidx, convert(RangeDomain, x.domain))
+    end
     return MOI.ConstraintIndex{SVF,MOI.Integer}(vidx)
 end
