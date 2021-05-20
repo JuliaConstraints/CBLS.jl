@@ -330,17 +330,17 @@ function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIAllEqualPar
 ) where {T <: Number}
     return true
 end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIAllEqualParam)
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIAllEqualParam{T}
+) where T <: Number
     max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
         usual_constraints[:all_equal_param])(x; param=param, dom_size=dom_size
     )
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV, MOIAllEqualParam}(cidx)
+    return CI{VOV, MOIAllEqualParam{T}}(cidx)
 end
 
-Base.copy(set::MOIAllEqualParam) = MOIAllEqualParam(copy(set.param),
-copy(set.dimension))
+Base.copy(set::MOIAllEqualParam) = MOIAllEqualParam(copy(set.param), copy(set.dimension))
 
 """
 Global constraint ensuring that all the values of `X` are all equal to a given parameter `param`.
@@ -377,13 +377,14 @@ function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOISumEqualPar
 ) where {T <: Number}
     return true
 end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOISumEqualParam)
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOISumEqualParam{T}
+) where {T <: Number}
     max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
         usual_constraints[:sum_equal_param])(x; param=param, dom_size=dom_size
     )
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV, MOISumEqualParam}(cidx)
+    return CI{VOV, MOISumEqualParam{T}}(cidx)
 end
 
 Base.copy(set::MOISumEqualParam) = MOISumEqualParam(copy(set.param),
