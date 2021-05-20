@@ -353,3 +353,50 @@ struct AllEqualParam{T <: Number} <: JuMP.AbstractVectorSet
     param::T
 end
 JuMP.moi_set(set::AllEqualParam, dim::Int) = MOIAllEqualParam(set.param, dim)
+
+"""
+    MOISumEqualParam{T <: Number} <: MOI.AbstractVectorSet
+
+DOCSTRING
+
+# Arguments:
+- `param::T`: DESCRIPTION
+- `dimension::Int`: DESCRIPTION
+- `MOISumEqualParam(param, dim = 0) = begin
+        #= none:5 =#
+        new{typeof(param)}(param, dim)
+    end`: DESCRIPTION
+"""
+struct MOISumEqualParam{T <: Number} <: MOI.AbstractVectorSet
+    param::T
+    dimension::Int
+
+    MOISumEqualParam(param, dim = 0) = new{typeof(param)}(param, dim)
+end
+function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOISumEqualParam{T}}
+) where {T <: Number}
+    return true
+end
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOISumEqualParam)
+    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
+        usual_constraints[:sum_equal_param])(x; param=param, dom_size=dom_size
+    )
+    cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
+    return CI{VOV, MOISumEqualParam}(cidx)
+end
+
+Base.copy(set::MOISumEqualParam) = MOISumEqualParam(copy(set.param),
+copy(set.dimension))
+
+"""
+Global constraint ensuring that the sum of the values of `X` is equal to a given parameter `param`.
+
+```julia
+@constraint(model, X in SumEqualParam(param))
+```
+"""
+struct SumEqualParam{T <: Number} <: JuMP.AbstractVectorSet
+    param::T
+end
+JuMP.moi_set(set::SumEqualParam, dim::Int) = MOISumEqualParam(set.param, dim)

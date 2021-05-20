@@ -26,7 +26,7 @@ const VAR_TYPES = Union{MOI.ZeroOne, MOI.Integer}
 
 # Export
 export DiscreteSet, Predicate, Error, ScalarFunction, AllDifferent, AllEqual
-export AllEqualParam, Eq, DistDifferent, AlwaysTrue, Ordered
+export AllEqualParam, Eq, DistDifferent, AlwaysTrue, Ordered, SumEqualParam
 # export CBLS
 
 # Include
