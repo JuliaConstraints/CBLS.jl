@@ -6,7 +6,7 @@ using JuMP
     err = _ -> 1.0
     concept = _ -> true
 
-    @variable(m, X[1:10], DiscreteSet(1:4))
+    @variable(m, 1 ≤ X[1:10] ≤ 4, Int)
 
     @constraint(m, X in Error(err))
     @constraint(m, X in Predicate(concept))
@@ -18,6 +18,7 @@ using JuMP
     @constraint(m, X[1:4] in DistDifferent())
     @constraint(m, X[1:2] in Eq())
     @constraint(m, X in Ordered())
+    @constraint(m, X in SumEqualParam(22))
 end
 
 # @testset "JuMP: sudoku 9x9" begin
@@ -52,7 +53,7 @@ end
     set_time_limit_sec(model, 5.0)
     @test time_limit_sec(model) == 5.0
 
-    @variable(model, x in DiscreteSet(0:20))
+    @variable(model, 0 ≤ x ≤ 20, Int)
     @variable(model, y in DiscreteSet(0:20))
 
     @constraint(model, [x,y] in Predicate(v -> 6v[1] + 8v[2] >= 100 ))
