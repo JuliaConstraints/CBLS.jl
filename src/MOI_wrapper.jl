@@ -60,6 +60,7 @@ end
 @forward Optimizer.solver LS._specialize, LS._specialize!, LS._tabu_time, LS._tabu_time!
 @forward Optimizer.solver LS._tabu_local, LS._tabu_local!, LS._tabu_delta, LS._tabu_delta!
 @forward Optimizer.solver LS._iteration!, LS._threads!, LS._time_limit, LS._time_limit!
+@forward Optimizer.solver LS._info_path, LS._info_path!
 
 """
     MOI.get(::Optimizer, ::MOI.SolverName) = begin
