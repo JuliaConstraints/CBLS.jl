@@ -8,7 +8,7 @@ MOI.get(optimizer::Optimizer, ::MOI.ObjectiveBound) = _best_bound(optimizer)
 MOI.get(optimizer::Optimizer, ::MOI.ResultCount) = 1
 
 function MOI.get(optimizer::Optimizer, ::MOI.VariablePrimal, vi::MOI.VariableIndex)
-    if has_solution(optimizer, :pool)
+    if has_solution(optimizer)
         return best_values(optimizer)[vi.value]
     else
         return get_value(optimizer, vi.value)
