@@ -8,18 +8,13 @@ MOI.supports(::Optimizer, ::MOI.TimeLimitSec) = true
 Set the time limit
 """
 function MOI.set(model::Optimizer, ::MOI.TimeLimitSec, value::Union{Nothing,Float64})
-    _time_limit!(model, value === nothing ? zero(Float64) : value)
+    set_option!(model, "time_limit", value === nothing ? Inf : value)
 end
-MOI.get(model::Optimizer, ::MOI.TimeLimitSec) = _time_limit(model)
+MOI.get(model::Optimizer, ::MOI.TimeLimitSec) = get_option(model, "time_limit")
 
 """
     MOI.set(model::Optimizer, p::MOI.RawParameter, value)
 Set a RawParameter to `value`
 """
-function MOI.set(model::Optimizer, p::MOI.RawParameter, value)
-    eval(Symbol("_" * p.name * "!"))(model, value)
-end
-
-function MOI.get(model::Optimizer, p::MOI.RawParameter)
-    eval(Symbol("_" * p.name))(model)
-end
+MOI.set(model::Optimizer, p::MOI.RawParameter, value) = set_option!(model, p.name, value)
+MOI.get(model::Optimizer, p::MOI.RawParameter) = get_option(model, p.name)

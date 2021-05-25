@@ -55,12 +55,7 @@ end
 @forward Optimizer.solver LS.get_variable, LS.has_solution
 
 # forward functions from Solver (from Options)
-@forward Optimizer.solver LS._verbose, LS._dynamic, LS.dynamic!, LS._iteration, LS._threads
-@forward Optimizer.solver LS._print_level, LS._print_level!, LS._solutions, LS._solutions!
-@forward Optimizer.solver LS._specialize, LS._specialize!, LS._tabu_time, LS._tabu_time!
-@forward Optimizer.solver LS._tabu_local, LS._tabu_local!, LS._tabu_delta, LS._tabu_delta!
-@forward Optimizer.solver LS._iteration!, LS._threads!, LS._time_limit, LS._time_limit!
-@forward Optimizer.solver LS._info_path, LS._info_path!
+@forward Optimizer.solver LS._verbose, LS.set_option!, LS.get_option
 
 """
     MOI.get(::Optimizer, ::MOI.SolverName) = begin
