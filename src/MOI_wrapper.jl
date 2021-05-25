@@ -52,7 +52,7 @@ end
 @forward Optimizer.solver LS.max_domains_size, LS.objective!, Base.empty!, LS._inc_cons!
 @forward Optimizer.solver LS._best_bound, LS.best_value, LS.is_sat, LS.get_value
 @forward Optimizer.solver LS.domain_size, LS.best_values, LS._max_cons, LS.update_domain!
-@forward Optimizer.solver LS.get_variable, LS.has_solution
+@forward Optimizer.solver LS.get_variable, LS.has_solution, LS.sense, LS.sense!
 
 # forward functions from Solver (from Options)
 @forward Optimizer.solver LS._verbose, LS.set_option!, LS.get_option

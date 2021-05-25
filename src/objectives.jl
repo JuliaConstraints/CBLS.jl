@@ -1,7 +1,9 @@
 MOI.supports(::Optimizer, ::MOI.ObjectiveSense) = true
-MOI.get(::Optimizer, ::MOI.ObjectiveSense) = MOI.MIN_SENSE
-function MOI.set(::Optimizer, ::MOI.ObjectiveSense, sense::MOI.OptimizationSense)
-    @debug "TODO: set sense" sense
+function MOI.get(model::Optimizer, ::MOI.ObjectiveSense)
+    return sense(model) == 1 ? MOI.MIN_SENSE : MOI.MAX_SENSE
+end
+function MOI.set(model::Optimizer, ::MOI.ObjectiveSense, sense::MOI.OptimizationSense)
+    sense!(model, Val(sense == MOI.MAX_SENSE ? :max : :min))
 end
 
 """
