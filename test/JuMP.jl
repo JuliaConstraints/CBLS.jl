@@ -25,7 +25,7 @@ end
 
 @testset "JuMP: basic opt" begin
     model = Model(CBLS.Optimizer)
-    
+
     set_optimizer_attribute(model, "iteration", 100)
     @test get_optimizer_attribute(model, "iteration") == 100
     set_time_limit_sec(model, 5.0)
@@ -42,6 +42,7 @@ end
 
     optimize!(model)
 
-    @info "JuMP: basic opt" value(x) value(y) (12*value(x)+20*value(y))
-    @info "Solving time" solve_time(model)
+    @info "JuMP: basic opt" value(x) value(y) (12*value(x)+20*value(y)) solve_time(model) termination_status(model)
+    # @info solution_summary(model)
+
 end
