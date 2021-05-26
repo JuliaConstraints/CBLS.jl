@@ -28,7 +28,6 @@ DOCSTRING
 """
 mutable struct Optimizer <: MOI.AbstractOptimizer
     solver::LS.MainSolver
-    status::MOI.TerminationStatusCode
     int_vars::Set{Int}
     compare_vars::Set{Int}
 end
@@ -41,7 +40,6 @@ DOCSTRING
 function Optimizer(model = model(); options = Options())
     return Optimizer(
         solver(model, options = options),
-        MOI.OPTIMIZE_NOT_CALLED,
         Set{Int}(),
         Set{Int}()
         )
@@ -53,7 +51,7 @@ end
 @forward Optimizer.solver LS._best_bound, LS.best_value, LS.is_sat, LS.get_value
 @forward Optimizer.solver LS.domain_size, LS.best_values, LS._max_cons, LS.update_domain!
 @forward Optimizer.solver LS.get_variable, LS.has_solution, LS.sense, LS.sense!
-@forward Optimizer.solver LS.time_info
+@forward Optimizer.solver LS.time_info, LS.status
 
 # forward functions from Solver (from Options)
 @forward Optimizer.solver LS._verbose, LS.set_option!, LS.get_option
@@ -93,26 +91,9 @@ function MOI.copy_to(model::Optimizer, src::MOI.ModelLike; kws...)
 end
 
 """
-    set_status!(optimizer::Optimizer, status::Symbol)
-
-DOCSTRING
-"""
-function set_status!(optimizer::Optimizer, status::Symbol)
-    if status == :iteration_limit
-        optimizer.status = MOI.ITERATION_LIMIT
-    elseif status == :time_limit
-        optimizer.status = MOI.TIME_LIMIT
-    elseif status == :solution_limit
-        optimizer.status = MOI.SOLUTION_LIMIT
-    end
-end
-
-"""
     MOI.optimize!(model::Optimizer)
 """
-function MOI.optimize!(optimizer::Optimizer)
-    set_status!(optimizer, solve!(optimizer.solver))
-end
+MOI.optimize!(optimizer::Optimizer) = solve!(optimizer.solver)
 
 """
     DiscreteSet(values)
