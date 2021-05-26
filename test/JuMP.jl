@@ -25,6 +25,7 @@ end
 
 @testset "JuMP: basic opt" begin
     model = Model(CBLS.Optimizer)
+    
     set_optimizer_attribute(model, "iteration", 100)
     @test get_optimizer_attribute(model, "iteration") == 100
     set_time_limit_sec(model, 5.0)
