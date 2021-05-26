@@ -42,4 +42,5 @@ end
     optimize!(model)
 
     @info "JuMP: basic opt" value(x) value(y) (12*value(x)+20*value(y))
+    @info "Solving time" solve_time(model)
 end

@@ -53,6 +53,7 @@ end
 @forward Optimizer.solver LS._best_bound, LS.best_value, LS.is_sat, LS.get_value
 @forward Optimizer.solver LS.domain_size, LS.best_values, LS._max_cons, LS.update_domain!
 @forward Optimizer.solver LS.get_variable, LS.has_solution, LS.sense, LS.sense!
+@forward Optimizer.solver LS.time_info
 
 # forward functions from Solver (from Options)
 @forward Optimizer.solver LS._verbose, LS.set_option!, LS.get_option

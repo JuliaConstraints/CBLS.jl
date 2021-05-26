@@ -1,6 +1,6 @@
 MOI.get(optimizer::Optimizer, ::MOI.TerminationStatus) = optimizer.status
 
-function MOI.get(optimizer::Optimizer, ov::MOI.ObjectiveValue)
+function MOI.get(optimizer::Optimizer, ::MOI.ObjectiveValue)
     return is_sat(optimizer) ? _values(optimizer) : _solution(optimizer)
 end
 
@@ -27,6 +27,4 @@ end
 #     end
 # end
 
-function MOI.get(optimizer::Optimizer, ::MOI.SolveTime)
-    return 0.0
-end
+MOI.get(optimizer::Optimizer, ::MOI.SolveTime) = time_info(optimizer)[:total_run]
