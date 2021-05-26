@@ -98,14 +98,12 @@ end
 DOCSTRING
 """
 function set_status!(optimizer::Optimizer, status::Symbol)
-    if status == :Solved
-        optimizer.status = MOI.OPTIMAL
-    elseif status == :Infeasible
-        optimizer.status = MOI.INFEASIBLE
-    elseif status == :LocalOptimum
+    if status == :iteration_limit
+        optimizer.status = MOI.ITERATION_LIMIT
+    elseif status == :time_limit
         optimizer.status = MOI.TIME_LIMIT
-    else
-        optimizer.status = MOI.OTHER_LIMIT
+    elseif status == :solution_limit
+        optimizer.status = MOI.SOLUTION_LIMIT
     end
 end
 
