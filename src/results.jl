@@ -1,7 +1,24 @@
-MOI.get(optimizer::Optimizer, ::MOI.TerminationStatus) = optimizer.status
+function MOI.get(optimizer::Optimizer, ::MOI.TerminationStatus)
+    TS = MOI.OPTIMIZE_NOT_CALLED
+    ts = status(optimizer)
+    if ts == :iteration_limit
+        TS = MOI.ITERATION_LIMIT
+    elseif ts == :time_limit
+        TS = MOI.TIME_LIMIT
+    elseif ts == :solution_limit
+        TS = MOI.SOLUTION_LIMIT
+    end
+    return TS
+end
+
+function MOI.get(optimizer::Optimizer, ::MOI.PrimalStatus)
+    return has_solution(optimizer) ? MOI.FEASIBLE_POINT : MOI.NO_SOLUTION
+end
+
+MOI.get(::Optimizer, ::MOI.DualStatus) = MOI.NO_SOLUTION
 
 function MOI.get(optimizer::Optimizer, ::MOI.ObjectiveValue)
-    return is_sat(optimizer) ? _values(optimizer) : _solution(optimizer)
+    return is_sat(optimizer) ? 0 : best_value(optimizer)
 end
 
 MOI.get(optimizer::Optimizer, ::MOI.ObjectiveBound) = _best_bound(optimizer)
@@ -15,16 +32,9 @@ function MOI.get(optimizer::Optimizer, ::MOI.VariablePrimal, vi::MOI.VariableInd
     end
 end
 
-# function set_status!(optimizer::Optimizer, status::Symbol)
-#     if status == :Solved
-#         optimizer.status = MOI.OPTIMAL
-#     elseif status == :Infeasible
-#         optimizer.status = MOI.INFEASIBLE
-#     elseif status == :Time
-#         optimizer.status = MOI.TIME_LIMIT
-#     else
-#         optimizer.status = MOI.OTHER_LIMIT
-#     end
-# end
 
 MOI.get(optimizer::Optimizer, ::MOI.SolveTime) = time_info(optimizer)[:total_run]
+
+function MOI.get(optimizer::Optimizer, ::MOI.RawStatusString)
+    return has_solution(optimizer) ? "Satisfying solution" : "No solutions"
+end
