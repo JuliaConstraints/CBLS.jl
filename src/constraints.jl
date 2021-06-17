@@ -401,3 +401,131 @@ struct SumEqualParam{T <: Number} <: JuMP.AbstractVectorSet
     param::T
 end
 JuMP.moi_set(set::SumEqualParam, dim::Int) = MOISumEqualParam(set.param, dim)
+
+"""
+    MOILessThanParam{T <: Number} <: MOI.AbstractVectorSet
+
+DOCSTRING
+
+# Arguments:
+- `param::T`: DESCRIPTION
+- `dimension::Int`: DESCRIPTION
+- `MOILessThanParam(param, dim = 0) = begin
+        #= none:5 =#
+        new{typeof(param)}(param, dim)
+    end`: DESCRIPTION
+"""
+struct MOILessThanParam{T <: Number} <: MOI.AbstractVectorSet
+    param::T
+    dimension::Int
+
+    MOILessThanParam(param, dim = 0) = new{typeof(param)}(param, dim)
+end
+function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOILessThanParam{T}}
+) where {T <: Number}
+    return true
+end
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOILessThanParam{T}
+) where {T <: Number}
+    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
+        usual_constraints[:less_than_param])(x; param=param, dom_size=dom_size
+    )
+    cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
+    return CI{VOV, MOILessThanParam{T}}(cidx)
+end
+
+Base.copy(set::MOILessThanParam) = MOILessThanParam(copy(set.param),
+copy(set.dimension))
+
+"""
+Constraint ensuring that the value of `x` is less than a given parameter `param`.
+
+```julia
+@constraint(model, x in LessThanParam(param))
+```
+"""
+struct LessThanParam{T <: Number} <: JuMP.AbstractVectorSet
+    param::T
+end
+JuMP.moi_set(set::LessThanParam, dim::Int) = MOILessThanParam(set.param, dim)
+
+"""
+    MOIMinusEqualParam{T <: Number} <: MOI.AbstractVectorSet
+
+DOCSTRING
+
+# Arguments:
+- `param::T`: DESCRIPTION
+- `dimension::Int`: DESCRIPTION
+- `MOIMinusEqualParam(param, dim = 0) = begin
+        #= none:5 =#
+        new{typeof(param)}(param, dim)
+    end`: DESCRIPTION
+"""
+struct MOIMinusEqualParam{T <: Number} <: MOI.AbstractVectorSet
+    param::T
+    dimension::Int
+
+    MOIMinusEqualParam(param, dim = 0) = new{typeof(param)}(param, dim)
+end
+function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIMinusEqualParam{T}}
+) where {T <: Number}
+    return true
+end
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIMinusEqualParam{T}
+) where {T <: Number}
+    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
+        usual_constraints[:minus_equal_param])(x; param=param, dom_size=dom_size
+    )
+    cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
+    return CI{VOV, MOIMinusEqualParam{T}}(cidx)
+end
+
+Base.copy(set::MOIMinusEqualParam) = MOIMinusEqualParam(copy(set.param),
+copy(set.dimension))
+
+"""
+Constraint ensuring that the value of `x` is less than a given parameter `param`.
+
+```julia
+@constraint(model, x in MinusEqualParam(param))
+```
+"""
+struct MinusEqualParam{T <: Number} <: JuMP.AbstractVectorSet
+    param::T
+end
+JuMP.moi_set(set::MinusEqualParam, dim::Int) = MOIMinusEqualParam(set.param, dim)
+
+
+"""
+    MOISequentialTasks <: MOI.AbstractVectorSet
+
+DOCSTRING
+"""
+struct MOISequentialTasks <: MOI.AbstractVectorSet
+    dimension::Int
+
+    MOISequentialTasks(dim = 4) = new(dim)
+end
+MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOISequentialTasks}) = true
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOISequentialTasks)
+    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
+        usual_constraints[:sequential_tasks])(x; param=param, dom_size=dom_size
+    )
+    cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
+    return CI{VOV, MOISequentialTasks}(cidx)
+end
+Base.copy(set::MOISequentialTasks) = MOISequentialTasks(copy(set.dimension))
+
+"""
+Local constraint ensuring that, given a vector `X` of size 4, `|X[1] - X[2]| ≠ |X[3] - X[4]|)`.
+
+```julia
+@constraint(model, X in SequentialTasks())
+```
+"""
+struct SequentialTasks <: JuMP.AbstractVectorSet end
+JuMP.moi_set(::SequentialTasks, dim::Int) = MOISequentialTasks(dim)
