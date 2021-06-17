@@ -1,5 +1,6 @@
 module CBLS
 
+using Constraints: sequential_tasks
 using Constraints
 using ConstraintDomains
 using JuMP
@@ -24,10 +25,26 @@ const CI = MOI.ConstraintIndex
 # MOI types
 const VAR_TYPES = Union{MOI.ZeroOne, MOI.Integer}
 
-# Export
-export DiscreteSet, Predicate, Error, ScalarFunction, AllDifferent, AllEqual
-export AllEqualParam, Eq, DistDifferent, AlwaysTrue, Ordered, SumEqualParam
-# export CBLS
+# Export: domain
+export DiscreteSet
+
+# Export: Constraints
+export AllDifferent
+export AllEqual
+export AllEqualParam
+export AlwaysTrue
+export DistDifferent
+export Eq
+export Error
+export LessThanParam
+export MinusEqualParam
+export Ordered
+export Predicate
+export SequentialTasks
+export SumEqualParam
+
+#Export: Scalar objective function
+export ScalarFunction
 
 # Include
 include("MOI_wrapper.jl")
