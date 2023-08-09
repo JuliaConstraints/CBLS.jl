@@ -33,7 +33,7 @@ function MOI.get(optimizer::Optimizer, ::MOI.VariablePrimal, vi::MOI.VariableInd
 end
 
 
-MOI.get(optimizer::Optimizer, ::MOI.SolveTime) = time_info(optimizer)[:total_run]
+MOI.get(optimizer::Optimizer, ::MOI.SolveTimeSec) = time_info(optimizer)[:total_run]
 
 function MOI.get(optimizer::Optimizer, ::MOI.RawStatusString)
     return has_solution(optimizer) ? "Satisfying solution" : "No solutions"

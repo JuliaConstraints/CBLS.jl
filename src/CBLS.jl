@@ -1,8 +1,8 @@
 module CBLS
 
-using Constraints: sequential_tasks
 using Constraints
 using ConstraintDomains
+using Intervals
 using JuMP
 using Lazy
 using LocalSearchSolvers
@@ -14,7 +14,6 @@ const MOI = MathOptInterface
 const MOIU = MOI.Utilities
 
 # MOI functions
-const SVF = MOI.SingleVariable
 const VOV = MOI.VectorOfVariables
 const OF = MOI.ObjectiveFunction
 

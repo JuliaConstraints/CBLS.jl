@@ -13,12 +13,11 @@ using JuMP
 
     @constraint(m, X in AllDifferent())
     @constraint(m, X in AllEqual())
-    @constraint(m, X in AllEqualParam(2))
-    @constraint(m, X in AlwaysTrue())
+    #@constraint(m, X in AllEqualParam(2))
     @constraint(m, X[1:4] in DistDifferent())
-    @constraint(m, X[1:2] in Eq())
+    #@constraint(m, X[1:4] in SequentialTasks())
     @constraint(m, X in Ordered())
-    @constraint(m, X in SumEqualParam(22))
+    #@constraint(m, X in SumEqualParam(22))
 
     optimize!(m)
 end

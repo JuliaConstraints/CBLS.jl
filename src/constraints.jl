@@ -128,10 +128,9 @@ struct MOIAllDifferent <: MOI.AbstractVectorSet
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIAllDifferent}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIAllDifferent)
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:all_different])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:all_different])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIAllDifferent}(cidx)
 end
@@ -159,10 +158,9 @@ struct MOIAllEqual <: MOI.AbstractVectorSet
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIAllEqual}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIAllEqual)
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:all_equal])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:all_equal])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIAllEqual}(cidx)
 end
@@ -191,10 +189,9 @@ struct MOIEq <: MOI.AbstractVectorSet
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIEq}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIEq)
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:eq])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:eq])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIEq}(cidx)
 end
@@ -223,10 +220,8 @@ struct MOIAlwaysTrue <: MOI.AbstractVectorSet
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIAlwaysTrue}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIAlwaysTrue)
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:always_true])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(USUAL_CONSTRAINTS[:always_true])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIAlwaysTrue}(cidx)
 end
@@ -255,10 +250,9 @@ struct MOIOrdered <: MOI.AbstractVectorSet
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIOrdered}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIOrdered)
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:ordered])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:ordered])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIOrdered}(cidx)
 end
@@ -288,10 +282,9 @@ struct MOIDistDifferent <: MOI.AbstractVectorSet
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIDistDifferent}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIDistDifferent)
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:dist_different])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:dist_different])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIDistDifferent}(cidx)
 end
@@ -332,9 +325,9 @@ function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIAllEqualPar
 end
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIAllEqualParam{T}
 ) where T <: Number
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:all_equal_param])(x; param=param, dom_size=dom_size
+    # max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:all_equal_param])(x; param=param, dom_size=dom_size
     )
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIAllEqualParam{T}}(cidx)
@@ -379,10 +372,9 @@ function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOISumEqualPar
 end
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOISumEqualParam{T}
 ) where {T <: Number}
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:sum_equal_param])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:sum_equal_param])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOISumEqualParam{T}}(cidx)
 end
@@ -427,10 +419,9 @@ function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOILessThanPar
 end
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOILessThanParam{T}
 ) where {T <: Number}
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:less_than_param])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:less_than_param])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOILessThanParam{T}}(cidx)
 end
@@ -475,10 +466,9 @@ function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIMinusEqualP
 end
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIMinusEqualParam{T}
 ) where {T <: Number}
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=set.param, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:minus_equal_param])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:minus_equal_param])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIMinusEqualParam{T}}(cidx)
 end
@@ -511,10 +501,9 @@ struct MOISequentialTasks <: MOI.AbstractVectorSet
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOISequentialTasks}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOISequentialTasks)
-    max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
-    e = (x; param=nothing, dom_size=max_dom_size) -> error_f(
-        usual_constraints[:sequential_tasks])(x; param=param, dom_size=dom_size
-    )
+    #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
+    e = (x; kargs...) -> error_f(
+        USUAL_CONSTRAINTS[:sequential_tasks])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOISequentialTasks}(cidx)
 end

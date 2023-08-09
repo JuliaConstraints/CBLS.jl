@@ -45,7 +45,7 @@ ScalarFunction(f, x::VI) = ScalarFunction(f, VOV([x]))
 Base.copy(func::ScalarFunction) = ScalarFunction(func.f, func.X)
 
 # supports
-MOI.supports(::Optimizer, ::OF{ScalarFunction{F, V}}) where {F <: Function, V <: Union{Nothing, SVF,VOV}} = true
+MOI.supports(::Optimizer, ::OF{ScalarFunction{F, V}}) where {F <: Function, V <: Union{Nothing, VI,VOV}} = true
 
 # set
 function MOI.set(optimizer::Optimizer, ::OF, func::ScalarFunction{F, Nothing}
