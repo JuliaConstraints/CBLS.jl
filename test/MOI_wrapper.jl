@@ -25,7 +25,7 @@ end
 const BRIDGED = MOI.instantiate(
     OPTIMIZER_CONSTRUCTOR, with_bridge_type = Float64
 )
-const CONFIG = MOIT.TestConfig(atol=1e-6, rtol=1e-6)
+const CONFIG = MOIT.Config(atol=1e-6, rtol=1e-6)
 
 # @testset "Unit" begin
 #     # Test all the functions included in dictionary `MOI.Test.unittests`,

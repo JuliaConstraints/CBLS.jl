@@ -85,9 +85,9 @@ MOI.is_empty(model::Optimizer) = LS._is_empty(model.solver)
 """
 Copy constructor for the optimizer
 """
-MOIU.supports_default_copy_to(::Optimizer, copy_names::Bool) = false
-function MOI.copy_to(model::Optimizer, src::MOI.ModelLike; kws...)
-    return MOIU.automatic_copy_to(model, src; kws...)
+MOI.supports_incremental_interface(::Optimizer) = true
+function MOI.copy_to(model::Optimizer, src::MOI.ModelLike)
+    return MOIU.default_copy_to(model, src)
 end
 
 """
@@ -119,6 +119,6 @@ DOCSTRING
 MOI.empty!(opt) = empty!(opt)
 
 
-function MOI.is_valid(optimizer::Optimizer, index::CI{SVF, MOI.Integer})
+function MOI.is_valid(optimizer::Optimizer, index::CI{VI, MOI.Integer})
     return index.value ∈ optimizer.int_vars
 end

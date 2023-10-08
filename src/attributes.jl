@@ -1,6 +1,6 @@
 struct PrintLevel <: MOI.AbstractOptimizerAttribute end
 
-MOI.supports(::Optimizer, ::MOI.RawParameter) = true
+MOI.supports(::Optimizer, ::MOI.RawOptimizerAttribute) = true
 MOI.supports(::Optimizer, ::MOI.TimeLimitSec) = true
 MOI.supports(::Optimizer, ::MOI.NumberOfThreads) = true
 
@@ -17,11 +17,11 @@ function MOI.get(model::Optimizer, ::MOI.TimeLimitSec)
 end
 
 """
-    MOI.set(model::Optimizer, p::MOI.RawParameter, value)
-Set a RawParameter to `value`
+    MOI.set(model::Optimizer, p::MOI.RawOptimizerAttribute, value)
+Set a RawOptimizerAttribute to `value`
 """
-MOI.set(model::Optimizer, p::MOI.RawParameter, value) = set_option!(model, p.name, value)
-MOI.get(model::Optimizer, p::MOI.RawParameter) = get_option(model, p.name)
+MOI.set(model::Optimizer, p::MOI.RawOptimizerAttribute, value) = set_option!(model, p.name, value)
+MOI.get(model::Optimizer, p::MOI.RawOptimizerAttribute) = get_option(model, p.name)
 
 
 function MOI.set(model::Optimizer, ::MOI.NumberOfThreads, value)
