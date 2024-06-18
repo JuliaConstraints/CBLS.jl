@@ -22,7 +22,7 @@ const VI = MOI.VariableIndex
 const CI = MOI.ConstraintIndex
 
 # MOI types
-const VAR_TYPES = Union{MOI.ZeroOne, MOI.Integer}
+const VAR_TYPES = Union{MOI.ZeroOne,MOI.Integer}
 
 # Export: domain
 export DiscreteSet
@@ -49,7 +49,13 @@ export ScalarFunction
 include("MOI_wrapper.jl")
 include("attributes.jl")
 include("variables.jl")
+
+## Constraints
 include("constraints.jl")
+include("constraints/all_different.jl")
+include("constraints/all_equal.jl")
+
+
 include("objectives.jl")
 include("results.jl")
 
