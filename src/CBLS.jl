@@ -35,18 +35,7 @@ export Cardinality
 export CardinalityClosed
 export CardinalityOpen
 export Channel
-
-export AllEqualParam
-export AlwaysTrue
-export DistDifferent
-export Eq
-export Error
-export LessThanParam
-export MinusEqualParam
-export Ordered
-export Predicate
-export SequentialTasks
-export SumEqualParam
+export Circuit
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -62,6 +51,7 @@ include("constraints/all_different.jl")
 include("constraints/all_equal.jl")
 include("constraints/cardinality.jl")
 include("constraints/channel.jl")
+include("constraints/circuit.jl")
 
 include("objectives.jl")
 include("results.jl")
