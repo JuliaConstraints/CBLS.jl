@@ -25,7 +25,7 @@ end
 const BRIDGED = MOI.instantiate(
     OPTIMIZER_CONSTRUCTOR, with_bridge_type = Float64
 )
-const CONFIG = MOIT.Config(atol=1e-6, rtol=1e-6)
+const CONFIG = MOIT.Config(atol = 1e-6, rtol = 1e-6)
 
 # @testset "Unit" begin
 #     # Test all the functions included in dictionary `MOI.Test.unittests`,
@@ -68,10 +68,10 @@ const CONFIG = MOIT.Config(atol=1e-6, rtol=1e-6)
 
     m1 = CBLS.Optimizer()
     MOI.add_variable(m1)
-    MOI.add_constraint(m1, VI(1), CBLS.DiscreteSet([1,2,3]))
+    MOI.add_constraint(m1, VI(1), CBLS.DiscreteSet([1, 2, 3]))
 
     m2 = CBLS.Optimizer()
-    MOI.add_constrained_variable(m2, CBLS.DiscreteSet([1,2,3]))
+    MOI.add_constrained_variable(m2, CBLS.DiscreteSet([1, 2, 3]))
 
     # opt = CBLS.sudoku(3, modeler = :MOI)
     # MOI.optimize!(opt)

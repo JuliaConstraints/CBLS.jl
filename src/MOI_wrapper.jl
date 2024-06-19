@@ -9,10 +9,10 @@ DOCSTRING
 - `set`: DESCRIPTION
 """
 function JuMP.build_variable(
-    ::Function,
-    info::JuMP.VariableInfo,
-    set::T,
-) where {T<:MOI.AbstractScalarSet}
+        ::Function,
+        info::JuMP.VariableInfo,
+        set::T
+) where {T <: MOI.AbstractScalarSet}
     return JuMP.VariableConstrainedOnCreation(JuMP.ScalarVariable(info), set)
 end
 
@@ -42,7 +42,7 @@ function Optimizer(model = model(); options = Options())
         solver(model, options = options),
         Set{Int}(),
         Set{Int}()
-        )
+    )
 end
 
 # forward functions from Solver
@@ -102,7 +102,7 @@ struct DiscreteSet{T <: Number} <: MOI.AbstractScalarSet
     values::Vector{T}
 end
 DiscreteSet(values) = DiscreteSet(collect(values))
-DiscreteSet(values::T...) where {T<:Number} = DiscreteSet(collect(values))
+DiscreteSet(values::T...) where {T <: Number} = DiscreteSet(collect(values))
 
 """
     Base.copy(set::DiscreteSet) = begin
@@ -118,7 +118,9 @@ DOCSTRING
 """
 MOI.empty!(opt) = empty!(opt)
 
-
 function MOI.is_valid(optimizer::Optimizer, index::CI{VI, MOI.Integer})
     return index.value ∈ optimizer.int_vars
 end
+
+Base.copy(op::F) where {F <: Function} = op
+Base.copy(::Nothing) = nothing

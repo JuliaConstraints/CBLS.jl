@@ -11,11 +11,11 @@ DOCSTRING
         new{typeof(f)}(f, dim)
     end`: DESCRIPTION
 """
-struct MOIError{F<:Function} <: MOI.AbstractVectorSet
+struct MOIError{F <: Function} <: MOI.AbstractVectorSet
     f::F
     dimension::Int
 
-    MOIError(f, dim=0) = new{typeof(f)}(f, dim)
+    MOIError(f, dim = 0) = new{typeof(f)}(f, dim)
 end
 
 """
@@ -29,7 +29,7 @@ DOCSTRING
 - ``: DESCRIPTION
 """
 function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIError{F}}
-) where {F<:Function}
+) where {F <: Function}
     return true
 end
 
@@ -43,9 +43,10 @@ DOCSTRING
 - `vars`: DESCRIPTION
 - `set`: DESCRIPTION
 """
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIError{F}) where {F<:Function}
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
+        set::MOIError{F}) where {F <: Function}
     cidx = constraint!(optimizer, set.f, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIError{F}}(cidx)
+    return CI{VOV, MOIError{F}}(cidx)
 end
 
 """
@@ -64,12 +65,12 @@ The solver will compute a straightforward error function based on the `concept`.
 @constraint(model, X in Error(err))
 ```
 """
-struct Error{F<:Function} <: JuMP.AbstractVectorSet
+struct Error{F <: Function} <: JuMP.AbstractVectorSet
     f::F
 end
 
 # @autodoc
-JuMP.moi_set(set::Error{F}, dim::Int) where {F<:Function} = MOIError(set.f, dim)
+JuMP.moi_set(set::Error{F}, dim::Int) where {F <: Function} = MOIError(set.f, dim)
 
 """
     MOIPredicate{F <: Function} <: MOI.AbstractVectorSet
@@ -84,20 +85,21 @@ DOCSTRING
         new{typeof(f)}(f, dim)
     end`: DESCRIPTION
 """
-struct MOIPredicate{F<:Function} <: MOI.AbstractVectorSet
+struct MOIPredicate{F <: Function} <: MOI.AbstractVectorSet
     f::F
     dimension::Int
 
-    MOIPredicate(f, dim=0) = new{typeof(f)}(f, dim)
+    MOIPredicate(f, dim = 0) = new{typeof(f)}(f, dim)
 end
 function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIPredicate{F}}
-) where {F<:Function}
+) where {F <: Function}
     return true
 end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIPredicate{F}) where {F<:Function}
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
+        set::MOIPredicate{F}) where {F <: Function}
     err = x -> convert(Float64, !set.f(x))
     cidx = constraint!(optimizer, err, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIPredicate{F}}(cidx)
+    return CI{VOV, MOIPredicate{F}}(cidx)
 end
 
 Base.copy(set::MOIPredicate) = MOIPredicate(deepcopy(set.f), copy(set.dimension))
@@ -111,7 +113,7 @@ Assuming `X` is a (collection of) variables, `concept` a boolean function over `
 @constraint(model, X in Predicate(concept))
 ```
 """
-struct Predicate{F<:Function} <: JuMP.AbstractVectorSet
+struct Predicate{F <: Function} <: JuMP.AbstractVectorSet
     f::F
 end
 JuMP.moi_set(set::Predicate, dim::Int) = MOIPredicate(set.f, dim)
@@ -124,7 +126,7 @@ DOCSTRING
 struct MOIEq <: MOI.AbstractVectorSet
     dimension::Int
 
-    MOIEq(dim=0) = new(dim)
+    MOIEq(dim = 0) = new(dim)
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIEq}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIEq)
@@ -132,7 +134,7 @@ function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, :
     e = (x; kargs...) -> error_f(
         USUAL_CONSTRAINTS[:eq])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIEq}(cidx)
+    return CI{VOV, MOIEq}(cidx)
 end
 
 Base.copy(set::MOIEq) = MOIEq(copy(set.dimension))
@@ -155,14 +157,15 @@ DOCSTRING
 struct MOIAlwaysTrue <: MOI.AbstractVectorSet
     dimension::Int
 
-    MOIAlwaysTrue(dim=0) = new(dim)
+    MOIAlwaysTrue(dim = 0) = new(dim)
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIAlwaysTrue}) = true
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIAlwaysTrue)
+function MOI.add_constraint(
+        optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIAlwaysTrue)
     #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; kargs...) -> error_f(USUAL_CONSTRAINTS[:always_true])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIAlwaysTrue}(cidx)
+    return CI{VOV, MOIAlwaysTrue}(cidx)
 end
 
 Base.copy(set::MOIAlwaysTrue) = MOIAlwaysTrue(copy(set.dimension))
@@ -185,7 +188,7 @@ DOCSTRING
 struct MOIOrdered <: MOI.AbstractVectorSet
     dimension::Int
 
-    MOIOrdered(dim=0) = new(dim)
+    MOIOrdered(dim = 0) = new(dim)
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIOrdered}) = true
 function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIOrdered)
@@ -193,7 +196,7 @@ function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, :
     e = (x; kargs...) -> error_f(
         USUAL_CONSTRAINTS[:ordered])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIOrdered}(cidx)
+    return CI{VOV, MOIOrdered}(cidx)
 end
 
 Base.copy(set::MOIOrdered) = MOIOrdered(copy(set.dimension))
@@ -208,7 +211,6 @@ Global constraint ensuring that all the values of `x` are ordered.
 struct Ordered <: JuMP.AbstractVectorSet end
 JuMP.moi_set(::Ordered, dim::Int) = MOIOrdered(dim)
 
-
 """
     MOIDistDifferent <: MOI.AbstractVectorSet
 
@@ -217,15 +219,16 @@ DOCSTRING
 struct MOIDistDifferent <: MOI.AbstractVectorSet
     dimension::Int
 
-    MOIDistDifferent(dim=4) = new(dim)
+    MOIDistDifferent(dim = 4) = new(dim)
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIDistDifferent}) = true
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIDistDifferent)
+function MOI.add_constraint(
+        optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIDistDifferent)
     #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; kargs...) -> error_f(
         USUAL_CONSTRAINTS[:dist_different])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIDistDifferent}(cidx)
+    return CI{VOV, MOIDistDifferent}(cidx)
 end
 Base.copy(set::MOIDistDifferent) = MOIDistDifferent(copy(set.dimension))
 
@@ -252,24 +255,25 @@ DOCSTRING
         new{typeof(param)}(param, dim)
     end`: DESCRIPTION
 """
-struct MOIAllEqualParam{T<:Number} <: MOI.AbstractVectorSet
+struct MOIAllEqualParam{T <: Number} <: MOI.AbstractVectorSet
     param::T
     dimension::Int
 
-    MOIAllEqualParam(param, dim=0) = new{typeof(param)}(param, dim)
+    MOIAllEqualParam(param, dim = 0) = new{typeof(param)}(param, dim)
 end
 function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIAllEqualParam{T}}
-) where {T<:Number}
+) where {T <: Number}
     return true
 end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIAllEqualParam{T}
-) where {T<:Number}
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
+        set::MOIAllEqualParam{T}
+) where {T <: Number}
     # max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; kargs...) -> error_f(
-        USUAL_CONSTRAINTS[:all_equal_param])(x; param=param, dom_size=dom_size
+        USUAL_CONSTRAINTS[:all_equal_param])(x; param = param, dom_size = dom_size
     )
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIAllEqualParam{T}}(cidx)
+    return CI{VOV, MOIAllEqualParam{T}}(cidx)
 end
 
 Base.copy(set::MOIAllEqualParam) = MOIAllEqualParam(copy(set.param), copy(set.dimension))
@@ -281,7 +285,7 @@ Global constraint ensuring that all the values of `X` are all equal to a given p
 @constraint(model, X in AllEqualParam(param))
 ```
 """
-struct AllEqualParam{T<:Number} <: JuMP.AbstractVectorSet
+struct AllEqualParam{T <: Number} <: JuMP.AbstractVectorSet
     param::T
 end
 JuMP.moi_set(set::AllEqualParam, dim::Int) = MOIAllEqualParam(set.param, dim)
@@ -299,23 +303,24 @@ DOCSTRING
         new{typeof(param)}(param, dim)
     end`: DESCRIPTION
 """
-struct MOISumEqualParam{T<:Number} <: MOI.AbstractVectorSet
+struct MOISumEqualParam{T <: Number} <: MOI.AbstractVectorSet
     param::T
     dimension::Int
 
-    MOISumEqualParam(param, dim=0) = new{typeof(param)}(param, dim)
+    MOISumEqualParam(param, dim = 0) = new{typeof(param)}(param, dim)
 end
 function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOISumEqualParam{T}}
-) where {T<:Number}
+) where {T <: Number}
     return true
 end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOISumEqualParam{T}
-) where {T<:Number}
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
+        set::MOISumEqualParam{T}
+) where {T <: Number}
     #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; kargs...) -> error_f(
         USUAL_CONSTRAINTS[:sum_equal_param])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOISumEqualParam{T}}(cidx)
+    return CI{VOV, MOISumEqualParam{T}}(cidx)
 end
 
 Base.copy(set::MOISumEqualParam) = MOISumEqualParam(copy(set.param),
@@ -328,7 +333,7 @@ Global constraint ensuring that the sum of the values of `X` is equal to a given
 @constraint(model, X in SumEqualParam(param))
 ```
 """
-struct SumEqualParam{T<:Number} <: JuMP.AbstractVectorSet
+struct SumEqualParam{T <: Number} <: JuMP.AbstractVectorSet
     param::T
 end
 JuMP.moi_set(set::SumEqualParam, dim::Int) = MOISumEqualParam(set.param, dim)
@@ -346,23 +351,24 @@ DOCSTRING
         new{typeof(param)}(param, dim)
     end`: DESCRIPTION
 """
-struct MOILessThanParam{T<:Number} <: MOI.AbstractVectorSet
+struct MOILessThanParam{T <: Number} <: MOI.AbstractVectorSet
     param::T
     dimension::Int
 
-    MOILessThanParam(param, dim=0) = new{typeof(param)}(param, dim)
+    MOILessThanParam(param, dim = 0) = new{typeof(param)}(param, dim)
 end
 function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOILessThanParam{T}}
-) where {T<:Number}
+) where {T <: Number}
     return true
 end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOILessThanParam{T}
-) where {T<:Number}
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
+        set::MOILessThanParam{T}
+) where {T <: Number}
     #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; kargs...) -> error_f(
         USUAL_CONSTRAINTS[:less_than_param])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOILessThanParam{T}}(cidx)
+    return CI{VOV, MOILessThanParam{T}}(cidx)
 end
 
 Base.copy(set::MOILessThanParam) = MOILessThanParam(copy(set.param),
@@ -375,7 +381,7 @@ Constraint ensuring that the value of `x` is less than a given parameter `param`
 @constraint(model, x in LessThanParam(param))
 ```
 """
-struct LessThanParam{T<:Number} <: JuMP.AbstractVectorSet
+struct LessThanParam{T <: Number} <: JuMP.AbstractVectorSet
     param::T
 end
 JuMP.moi_set(set::LessThanParam, dim::Int) = MOILessThanParam(set.param, dim)
@@ -393,27 +399,30 @@ DOCSTRING
         new{typeof(param)}(param, dim)
     end`: DESCRIPTION
 """
-struct MOIMinusEqualParam{T<:Number} <: MOI.AbstractVectorSet
+struct MOIMinusEqualParam{T <: Number} <: MOI.AbstractVectorSet
     param::T
     dimension::Int
 
-    MOIMinusEqualParam(param, dim=0) = new{typeof(param)}(param, dim)
+    MOIMinusEqualParam(param, dim = 0) = new{typeof(param)}(param, dim)
 end
 function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIMinusEqualParam{T}}
-) where {T<:Number}
+) where {T <: Number}
     return true
 end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIMinusEqualParam{T}
-) where {T<:Number}
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
+        set::MOIMinusEqualParam{T}
+) where {T <: Number}
     #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; kargs...) -> error_f(
         USUAL_CONSTRAINTS[:minus_equal_param])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOIMinusEqualParam{T}}(cidx)
+    return CI{VOV, MOIMinusEqualParam{T}}(cidx)
 end
 
-Base.copy(set::MOIMinusEqualParam) = MOIMinusEqualParam(copy(set.param),
-    copy(set.dimension))
+function Base.copy(set::MOIMinusEqualParam)
+    MOIMinusEqualParam(copy(set.param),
+        copy(set.dimension))
+end
 
 """
 Constraint ensuring that the value of `x` is less than a given parameter `param`.
@@ -422,11 +431,10 @@ Constraint ensuring that the value of `x` is less than a given parameter `param`
 @constraint(model, x in MinusEqualParam(param))
 ```
 """
-struct MinusEqualParam{T<:Number} <: JuMP.AbstractVectorSet
+struct MinusEqualParam{T <: Number} <: JuMP.AbstractVectorSet
     param::T
 end
 JuMP.moi_set(set::MinusEqualParam, dim::Int) = MOIMinusEqualParam(set.param, dim)
-
 
 """
     MOISequentialTasks <: MOI.AbstractVectorSet
@@ -436,15 +444,16 @@ DOCSTRING
 struct MOISequentialTasks <: MOI.AbstractVectorSet
     dimension::Int
 
-    MOISequentialTasks(dim=4) = new(dim)
+    MOISequentialTasks(dim = 4) = new(dim)
 end
 MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOISequentialTasks}) = true
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOISequentialTasks)
+function MOI.add_constraint(
+        optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOISequentialTasks)
     #max_dom_size = max_domains_size(optimizer, map(x -> x.value, vars.variables))
     e = (x; kargs...) -> error_f(
         USUAL_CONSTRAINTS[:sequential_tasks])(x; kargs...)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
-    return CI{VOV,MOISequentialTasks}(cidx)
+    return CI{VOV, MOISequentialTasks}(cidx)
 end
 Base.copy(set::MOISequentialTasks) = MOISequentialTasks(copy(set.dimension))
 

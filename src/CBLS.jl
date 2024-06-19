@@ -7,6 +7,7 @@ using JuMP
 using Lazy
 using LocalSearchSolvers
 using MathOptInterface
+using TestItems
 
 # Const
 const LS = LocalSearchSolvers
@@ -22,7 +23,7 @@ const VI = MOI.VariableIndex
 const CI = MOI.ConstraintIndex
 
 # MOI types
-const VAR_TYPES = Union{MOI.ZeroOne,MOI.Integer}
+const VAR_TYPES = Union{MOI.ZeroOne, MOI.Integer}
 
 # Export: domain
 export DiscreteSet
@@ -54,7 +55,6 @@ include("variables.jl")
 include("constraints.jl")
 include("constraints/all_different.jl")
 include("constraints/all_equal.jl")
-
 
 include("objectives.jl")
 include("results.jl")
