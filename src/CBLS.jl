@@ -31,6 +31,10 @@ export DiscreteSet
 # Export: Constraints
 export AllDifferent
 export AllEqual
+export Cardinality
+export CardinalityClosed
+export CardinalityOpen
+
 export AllEqualParam
 export AlwaysTrue
 export DistDifferent
@@ -55,6 +59,7 @@ include("variables.jl")
 include("constraints.jl")
 include("constraints/all_different.jl")
 include("constraints/all_equal.jl")
+include("constraints/cardinality.jl")
 
 include("objectives.jl")
 include("results.jl")
