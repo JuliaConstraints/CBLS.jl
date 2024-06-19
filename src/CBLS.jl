@@ -34,6 +34,7 @@ export AllEqual
 export Cardinality
 export CardinalityClosed
 export CardinalityOpen
+export Channel
 
 export AllEqualParam
 export AlwaysTrue
@@ -60,6 +61,7 @@ include("constraints.jl")
 include("constraints/all_different.jl")
 include("constraints/all_equal.jl")
 include("constraints/cardinality.jl")
+include("constraints/channel.jl")
 
 include("objectives.jl")
 include("results.jl")
