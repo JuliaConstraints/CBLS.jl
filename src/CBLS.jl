@@ -39,6 +39,7 @@ export Cumulative
 export Element
 export Extension, Supports, Conflicts
 export Instantiation
+export DistDifferent # Implementation of an intensional constraint
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -60,6 +61,7 @@ include("constraints/cumulative.jl")
 include("constraints/element.jl")
 include("constraints/extension.jl")
 include("constraints/instantiation.jl")
+include("constraints/intention.jl")
 
 include("objectives.jl")
 include("results.jl")
