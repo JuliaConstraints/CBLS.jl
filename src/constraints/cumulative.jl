@@ -71,7 +71,7 @@ function JuMP.moi_set(set::Cumulative, dim::Int)
 end
 
 ## SECTION - Test Items
-@testitem "Cumulative" tags=[:usual, :constraints, :cumulative] begin
+@testitem "Cumulative" tags=[:usual, :constraints, :cumulative] default_imports=false begin
     using CBLS
     using JuMP
 
