@@ -40,6 +40,7 @@ export Element
 export Extension, Supports, Conflicts
 export Instantiation
 export DistDifferent # Implementation of an intensional constraint
+export Maximum
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -62,6 +63,7 @@ include("constraints/element.jl")
 include("constraints/extension.jl")
 include("constraints/instantiation.jl")
 include("constraints/intention.jl")
+include("constraints/maximum.jl")
 
 include("objectives.jl")
 include("results.jl")
