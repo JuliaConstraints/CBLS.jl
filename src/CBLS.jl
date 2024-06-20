@@ -36,6 +36,7 @@ export Channel
 export Circuit
 export Count, AtLeast, AtMost, Exactly
 export Cumulative
+export Element
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -54,6 +55,7 @@ include("constraints/channel.jl")
 include("constraints/circuit.jl")
 include("constraints/count.jl")
 include("constraints/cumulative.jl")
+include("constraints/element.jl")
 
 include("objectives.jl")
 include("results.jl")
