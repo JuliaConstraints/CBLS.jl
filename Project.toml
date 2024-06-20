@@ -4,6 +4,7 @@ authors = ["Jean-Francois Baffier"]
 version = "0.1.13"
 
 [deps]
+ConstraintCommons = "e37357d9-0691-492f-a822-e5ea6a920954"
 ConstraintDomains = "5800fd60-8556-4464-8d61-84ebf7a0bedb"
 Constraints = "30f324ab-b02d-43f0-b619-e131c61659f7"
 Intervals = "d8418881-c3e1-53bb-8760-2df7ec849ed5"

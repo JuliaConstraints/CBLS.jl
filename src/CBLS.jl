@@ -1,7 +1,8 @@
 module CBLS
 
-using Constraints
+using ConstraintCommons
 using ConstraintDomains
+using Constraints
 using Intervals
 using JuMP
 using Lazy
@@ -41,6 +42,7 @@ export Extension, Supports, Conflicts
 export Instantiation
 export DistDifferent # Implementation of an intensional constraint
 export Maximum
+export MDDConstraint
 export Minimum
 
 #Export: Scalar objective function
@@ -65,6 +67,7 @@ include("constraints/extension.jl")
 include("constraints/instantiation.jl")
 include("constraints/intention.jl")
 include("constraints/maximum.jl")
+include("constraints/mdd.jl")
 include("constraints/minimum.jl")
 
 include("objectives.jl")
