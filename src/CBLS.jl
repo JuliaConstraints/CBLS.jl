@@ -31,11 +31,10 @@ export DiscreteSet
 # Export: Constraints
 export AllDifferent
 export AllEqual
-export Cardinality
-export CardinalityClosed
-export CardinalityOpen
+export Cardinality, CardinalityClosed, CardinalityOpen
 export Channel
 export Circuit
+export Count, AtLeast, AtMost, Exactly
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -52,6 +51,7 @@ include("constraints/all_equal.jl")
 include("constraints/cardinality.jl")
 include("constraints/channel.jl")
 include("constraints/circuit.jl")
+include("constraints/count.jl")
 
 include("objectives.jl")
 include("results.jl")
