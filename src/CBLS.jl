@@ -46,6 +46,7 @@ export MDDConstraint
 export Minimum
 export NValues
 export NoOverlap, NoOverlapNoZero, NoOverlapWithZero
+export Ordered
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -73,6 +74,7 @@ include("constraints/mdd.jl")
 include("constraints/minimum.jl")
 include("constraints/n_values.jl")
 include("constraints/no_overlap.jl")
+include("constraints/ordered.jl")
 
 include("objectives.jl")
 include("results.jl")
