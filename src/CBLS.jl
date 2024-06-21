@@ -48,6 +48,7 @@ export NValues
 export NoOverlap, NoOverlapNoZero, NoOverlapWithZero
 export Ordered
 export Regular
+export Sum
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -77,6 +78,7 @@ include("constraints/n_values.jl")
 include("constraints/no_overlap.jl")
 include("constraints/ordered.jl")
 include("constraints/regular.jl")
+include("constraints/sum.jl")
 
 include("objectives.jl")
 include("results.jl")
