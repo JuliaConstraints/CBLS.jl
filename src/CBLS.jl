@@ -44,6 +44,7 @@ export DistDifferent # Implementation of an intensional constraint
 export Maximum
 export MDDConstraint
 export Minimum
+export NValues
 
 #Export: Scalar objective function
 export ScalarFunction
@@ -69,6 +70,7 @@ include("constraints/intention.jl")
 include("constraints/maximum.jl")
 include("constraints/mdd.jl")
 include("constraints/minimum.jl")
+include("constraints/n_values.jl")
 
 include("objectives.jl")
 include("results.jl")
