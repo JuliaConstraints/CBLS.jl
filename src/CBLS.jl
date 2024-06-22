@@ -30,6 +30,8 @@ const VAR_TYPES = Union{MOI.ZeroOne, MOI.Integer}
 export DiscreteSet
 
 # Export: Constraints
+export Error, Predicate
+
 export AllDifferent
 export AllEqual
 export Cardinality, CardinalityClosed, CardinalityOpen

@@ -117,3 +117,22 @@ struct Predicate{F <: Function} <: JuMP.AbstractVectorSet
     f::F
 end
 JuMP.moi_set(set::Predicate, dim::Int) = MOIPredicate(set.f, dim)
+
+## SECTION - Test Items
+@testitem "Error and Predicate" begin
+    using CBLS
+    using JuMP
+
+    model = Model(CBLS.Optimizer)
+
+    @variable(model, 1≤X[1:4]≤4, Int)
+    @variable(model, 1≤Y[1:4]≤4, Int)
+
+    @constraint(model, X in Error(x -> x[1] + x[2] + x[3] + x[4] == 10))
+    @constraint(model, Y in Predicate(x -> x[1] + x[2] + x[3] + x[4] == 10))
+
+    optimize!(model)
+    @info "Error and Predicate" value.(X) value.(Y)
+    termination_status(model)
+    @info solution_summary(model)
+end

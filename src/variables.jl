@@ -51,25 +51,6 @@ function MOI.add_constraint(optimizer::Optimizer, v::VI, set::DiscreteSet{T}
     return CI{VI, DiscreteSet{T}}(vidx)
 end
 
-# function MOI.add_constraint(optimizer::Optimizer, v::VI, lt::MOI.LessThan{T}
-# ) where {T <: AbstractFloat}
-#     vidx = v.value
-#     d = make_domain(typemin(Int), lt.upper, Val(:range))
-#     update_domain!(optimizer, vidx, d)
-#     return CI{VI,MOI.LessThan{T}}(vidx)
-# end
-
-# function MOI.add_constraint(optimizer::Optimizer, v::VI, gt::MOI.GreaterThan{T}
-# ) where {T <: AbstractFloat}
-#     vidx = v.value
-#     d = make_domain(gt.lower, typemax(Int), Val(:range))
-#     update_domain!(optimizer, vidx, d)
-#     return CI{VI,MOI.GreaterThan{T}}(vidx)
-# end
-
-# make_domain(a, b, ::Val{:range}) = domain(Int(a):Int(b))
-# make_domain(a, b, ::Val{:inter}) = domain((a, true), (b, true))
-
 function MOI.add_constraint(optimizer::Optimizer, v::VI, lt::MOI.LessThan{T}
 ) where {T <: AbstractFloat}
     vidx = v.value
@@ -128,4 +109,29 @@ function MOI.add_constraint(optimizer::Optimizer, v::VI, ::MOI.Integer)
         _set_domain!(optimizer, vidx, convert(RangeDomain, x.domain))
     end
     return MOI.ConstraintIndex{VI, MOI.Integer}(vidx)
+end
+
+# MOI.supports_constraint(::Optimizer, ::Type{VI}, ::Type{<:MOI.ZeroOne}) = true
+
+# function MOI.add_constraint(optimizer::Optimizer, v::VI, ::MOI.ZeroOne)
+#     vidx = v.value
+#     push!(optimizer.int_vars, vidx)
+#     if vidx ∈ optimizer.compare_vars
+#         d = domain(0:1)
+#         _set_domain!(optimizer, vidx, d)
+#     end
+#     return MOI.ConstraintIndex{VI, MOI.ZeroOne}(vidx)
+# end
+
+## SECTION - Test Items
+@testitem "Variable Index" begin
+    using CBLS
+    using JuMP
+
+    model = Model(CBLS.Optimizer)
+
+    @variable(model, 1≤X[1:4]≤4, Int)
+    # @variable(model, Y[1:4], Bin)
+
+    optimize!(model)
 end
