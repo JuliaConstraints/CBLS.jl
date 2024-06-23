@@ -80,7 +80,7 @@ end
     @constraint(model, Y in Sum(; op = <=, val = 10))
 
     optimize!(model)
-    @info "Sum" objective_value(model)
+    @info "Sum" value.(X) value.(Y)
     termination_status(model)
     @info solution_summary(model)
 end
