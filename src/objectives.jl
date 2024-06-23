@@ -45,7 +45,10 @@ ScalarFunction(f, x::VI) = ScalarFunction(f, VOV([x]))
 Base.copy(func::ScalarFunction) = ScalarFunction(func.f, func.X)
 
 # supports
-MOI.supports(::Optimizer, ::OF{ScalarFunction{F, V}}) where {F <: Function, V <: Union{Nothing, VI,VOV}} = true
+function MOI.supports(::Optimizer,
+        ::OF{ScalarFunction{F, V}}) where {F <: Function, V <: Union{Nothing, VI, VOV}}
+    true
+end
 
 # set
 function MOI.set(optimizer::Optimizer, ::OF, func::ScalarFunction{F, Nothing}
@@ -55,17 +58,17 @@ end
 
 function MOI.set(optimizer::Optimizer, ::OF, func::ScalarFunction{F, VOV}
 ) where {F <: Function} # VOV, mainly for JuMP
-        objective_func = _ -> func.f(map(y -> get_value(optimizer,y.value), func.X.variables))
-        return objective!(optimizer, objective_func)
- end
+    objective_func = _ -> func.f(map(y -> get_value(optimizer, y.value), func.X.variables))
+    return objective!(optimizer, objective_func)
+end
 
 #  @autodoc
- function MOIU.map_indices(index_map::Function, sf::ScalarFunction{F,VOV}
+function MOIU.map_indices(index_map::Function, sf::ScalarFunction{F, VOV}
 ) where {F <: Function}
     return ScalarFunction(sf.f, MOIU.map_indices(index_map, sf.X))
- end
+end
 
 #  @autodoc
- function MOIU.map_indices(::Function, sf::ScalarFunction{F,Nothing}) where {F <: Function}
-        return ScalarFunction(sf.f, nothing)
+function MOIU.map_indices(::Function, sf::ScalarFunction{F, Nothing}) where {F <: Function}
+    return ScalarFunction(sf.f, nothing)
 end
