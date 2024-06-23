@@ -15,6 +15,7 @@ MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [compat]
+ConstraintCommons = "0.2"
 ConstraintDomains = "0.3"
 Constraints = "0.5"
 Intervals = "1"
@@ -22,6 +23,7 @@ JuMP = "1"
 Lazy = "0.15"
 LocalSearchSolvers = "0.4"
 MathOptInterface = "1"
+TestItems = "0.1"
 julia = "1.6"
 
 [extras]
