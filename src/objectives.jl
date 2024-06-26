@@ -72,3 +72,11 @@ end
 function MOIU.map_indices(::Function, sf::ScalarFunction{F, Nothing}) where {F <: Function}
     return ScalarFunction(sf.f, nothing)
 end
+
+function MOIU._to_string(::MOIU._PrintOptions, ::MOI.ModelLike, f::ScalarFunction)
+    return "Scalar Objective function: $(typeof(f))"
+end
+
+function JuMP.jump_function_type(::GenericModel{T}, F::Type{<:ScalarFunction}) where {T}
+    return F
+end

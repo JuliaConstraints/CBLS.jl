@@ -8,6 +8,7 @@ using JuMP
 using Lazy
 using LocalSearchSolvers
 using MathOptInterface
+using Pkg
 using TestItems
 
 # Const
@@ -30,7 +31,8 @@ const VAR_TYPES = Union{MOI.ZeroOne, MOI.Integer}
 export DiscreteSet
 
 # Export: Constraints
-export Error, Predicate
+export Error
+export Intention, Predicate
 
 export AllDifferent
 export AllEqual
