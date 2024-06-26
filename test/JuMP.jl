@@ -35,4 +35,6 @@ end
 
     @info "JuMP: basic opt" value(x) value(y) (12 * value(x)+20 * value(y)) solve_time(model) termination_status(model)
     @info solution_summary(model)
+
+    @info "testing objective printing" model
 end
