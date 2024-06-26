@@ -1,79 +1,83 @@
-using MathOptInterface
-const MOI = MathOptInterface
-const MOIT = MOI.Test
-const MOIU = MOI.Utilities
-const MOIB = MOI.Bridges
+# ============================ /test/MOI_wrapper.jl ============================
+module TestCBLS
 
-const VOV = MOI.VectorOfVariables
-const VI = MOI.VariableIndex
+import CBLS
+using Test
 
-const OPTIMIZER_CONSTRUCTOR = MOI.OptimizerWithAttributes(
-    CBLS.Optimizer, MOI.Silent() => true
+import MathOptInterface as MOI
+
+const OPTIMIZER = MOI.instantiate(
+    MOI.OptimizerWithAttributes(CBLS.Optimizer, MOI.Silent() => true),
 )
-const OPTIMIZER = MOI.instantiate(OPTIMIZER_CONSTRUCTOR)
-
-@testset "LocalSearchSolvers" begin
-    @test MOI.get(OPTIMIZER, MOI.SolverName()) == "LocalSearchSolvers"
-end
-
-# @testset "supports_default_copy_to" begin
-#     @test MOIU.supports_default_copy_to(OPTIMIZER, false)
-#     # Use `@test !...` if names are not supported
-#     @test !MOIU.supports_default_copy_to(OPTIMIZER, true)
-# end
 
 const BRIDGED = MOI.instantiate(
-    OPTIMIZER_CONSTRUCTOR, with_bridge_type = Float64
+    MOI.OptimizerWithAttributes(CBLS.Optimizer, MOI.Silent() => true),
+    with_bridge_type = Float64, with_cache_type = Float64
 )
-const CONFIG = MOIT.Config(atol = 1e-6, rtol = 1e-6)
 
-# @testset "Unit" begin
-#     # Test all the functions included in dictionary `MOI.Test.unittests`,
-#     # except functions "number_threads" and "solve_qcp_edge_cases."
-#     MOIT.unittest(
-#         BRIDGED,
-#         CONFIG,
-#         ["number_threads", "solve_qcp_edge_cases"]
-#     )
-# end
+# See the docstring of MOI.Test.Config for other arguments.
+const CONFIG = MOI.Test.Config(
+    # Modify tolerances as necessary.
+    atol = 1e-6,
+    rtol = 1e-6,
+    # Use MOI.LOCALLY_SOLVED for local solvers.
+    optimal_status = MOI.LOCALLY_SOLVED    # Pass attributes or MOI functions to `exclude` to skip tests that    # rely on this functionality.    # exclude = Any[MOI.VariableName, MOI.delete]
+)
 
-# @testset "Modification" begin
-#     MOIT.modificationtest(BRIDGED, CONFIG)
-# end
+"""
+    runtests()
 
-# @testset "Continuous Linear" begin
-#     MOIT.contlineartest(BRIDGED, CONFIG)
-# end
-
-# @testset "Continuous Conic" begin
-#     MOIT.contlineartest(BRIDGED, CONFIG)
-# end
-
-# @testset "Integer Conic" begin
-#     MOIT.intconictest(BRIDGED, CONFIG)
-# end
-@testset "MOI: examples" begin
-    # m = LocalSearchSolvers.Optimizer()
-    # MOI.add_variables(m, 3)
-    # MOI.add_constraint(m, VI(1), LS.DiscreteSet([1,2,3]))
-    # MOI.add_constraint(m, VI(2), LS.DiscreteSet([1,2,3]))
-    # MOI.add_constraint(m, VI(3), LS.DiscreteSet([1,2,3]))
-
-    # MOI.add_constraint(m, VOV([VI(1),VI(2)]), LS.MOIPredicate(allunique))
-    # MOI.add_constraint(m, VOV([VI(2),VI(3)]), LS.MOIAllDifferent(2))
-
-    # MOI.set(m, MOI.ObjectiveFunction{LS.ScalarFunction}(), LS.ScalarFunction(sum, VI(1)))
-
-    # MOI.optimize!(m)
-
-    m1 = CBLS.Optimizer()
-    MOI.add_variable(m1)
-    MOI.add_constraint(m1, VI(1), CBLS.DiscreteSet([1, 2, 3]))
-
-    m2 = CBLS.Optimizer()
-    MOI.add_constrained_variable(m2, CBLS.DiscreteSet([1, 2, 3]))
-
-    # opt = CBLS.sudoku(3, modeler = :MOI)
-    # MOI.optimize!(opt)
-    # @info solution(opt)
+This function runs all functions in the this Module starting with `test_`.
+"""
+function runtests()
+    for name in names(@__MODULE__; all = true)
+        if startswith("$(name)", "test_")
+            @testset "$(name)" begin
+                getfield(@__MODULE__, name)()
+            end
+        end
+    end
 end
+
+"""
+    test_runtests()
+
+This function runs all the tests in MathOptInterface.Test.
+
+Pass arguments to `exclude` to skip tests for functionality that is not
+implemented or that your solver doesn't support.
+"""
+function test_runtests()
+    MOI.Test.runtests(
+        BRIDGED,
+        CONFIG,
+        exclude = [
+            "test_attribute_SolveTimeSec", # Hang indefinitely
+            "test_model_copy_to_UnsupportedAttribute", # Not supported. What it is suppsoed to be?
+            "supports_constraint_VariableIndex_EqualTo" # Not supported. What it is suppsoed to be?
+        ],
+        # This argument is useful to prevent tests from failing on future
+        # releases of MOI that add new tests. Don't let this number get too far
+        # behind the current MOI release though. You should periodically check
+        # for new tests to fix bugs and implement new features.
+        exclude_tests_after = v"1.30.0",
+        verbose = true
+    )
+    return
+end
+
+"""
+    test_SolverName()
+
+You can also write new tests for solver-specific functionality. Write each new
+test as a function with a name beginning with `test_`.
+"""
+function test_SolverName()
+    @test MOI.get(CBLS.Optimizer(), MOI.SolverName()) == "CBLS"
+    return
+end
+
+end # module TestCBLS
+
+# This line at tne end of the file runs all the tests!
+TestCBLS.runtests()

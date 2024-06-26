@@ -61,10 +61,7 @@ struct Cumulative{F <: Function, T1 <: Number, T2 <: Number, V <: VecOrMat{T1}} 
     end
 end
 
-function Cumulative(; op::F = ≤, pair_vars::V = Vector{Number}(),
-        val::T2) where {F <: Function, T1 <: Number, T2 <: Number, V <: VecOrMat{T1}}
-    return Cumulative(op, pair_vars, val)
-end
+Cumulative(; op = ≤, pair_vars = Vector{Number}(), val) = Cumulative(op, pair_vars, val)
 
 function JuMP.moi_set(set::Cumulative, dim::Int)
     return MOICumulative(set.op, set.pair_vars, set.val, dim)
