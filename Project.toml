@@ -1,7 +1,7 @@
 name = "CBLS"
 uuid = "a3809bfe-37bb-4d48-a667-bac4c6be8d90"
 authors = ["Jean-Francois Baffier"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 ConstraintCommons = "e37357d9-0691-492f-a822-e5ea6a920954"
@@ -12,6 +12,7 @@ JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 Lazy = "50d2b5c4-7a5e-59d5-8109-a42b560f39c0"
 LocalSearchSolvers = "2b10edaa-728d-4283-ac71-07e312d6ccf3"
 MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [compat]

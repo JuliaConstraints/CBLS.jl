@@ -51,11 +51,7 @@ struct Extension{T <: Number, V <: Union{Vector{Vector{T}}, Tuple{Vector{T}, Vec
     end
 end
 
-function Extension(;
-        pair_vars::V) where {
-        T <: Number, V <: Union{Vector{Vector{T}}, Tuple{Vector{T}, Vector{T}}}}
-    return Extension(pair_vars)
-end
+Extension(; pair_vars) = Extension(pair_vars)
 
 function JuMP.moi_set(set::Extension, dim::Int)
     return MOIExtension(set.pair_vars, dim)

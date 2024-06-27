@@ -9,15 +9,7 @@ using JuMP
     @variable(m, 1≤X[1:10]≤4, Int)
 
     @constraint(m, X in Error(err))
-    @constraint(m, X in Predicate(concept))
-
-    @constraint(m, X in AllDifferent())
-    @constraint(m, X in AllEqual())
-    #@constraint(m, X in AllEqualParam(2))
-    @constraint(m, X[1:4] in DistDifferent())
-    #@constraint(m, X[1:4] in SequentialTasks())
-    @constraint(m, X in Ordered())
-    #@constraint(m, X in SumEqualParam(22))
+    @constraint(m, X in Intention(concept))
 
     optimize!(m)
 end
@@ -33,8 +25,8 @@ end
     @variable(model, 0≤x≤20, Int)
     @variable(model, y in DiscreteSet(0:20))
 
-    @constraint(model, [x, y] in Predicate(v -> 6v[1] + 8v[2] >= 100))
-    @constraint(model, [x, y] in Predicate(v -> 7v[1] + 12v[2] >= 120))
+    @constraint(model, [x, y] in Intention(v -> 6v[1] + 8v[2] >= 100))
+    @constraint(model, [x, y] in Intention(v -> 7v[1] + 12v[2] >= 120))
 
     objFunc = v -> 12v[1] + 20v[2]
     @objective(model, Min, ScalarFunction(objFunc))
@@ -43,4 +35,6 @@ end
 
     @info "JuMP: basic opt" value(x) value(y) (12 * value(x)+20 * value(y)) solve_time(model) termination_status(model)
     @info solution_summary(model)
+
+    @info "testing objective printing" model
 end

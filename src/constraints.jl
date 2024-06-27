@@ -73,50 +73,125 @@ end
 JuMP.moi_set(set::Error{F}, dim::Int) where {F <: Function} = MOIError(set.f, dim)
 
 """
-    MOIPredicate{F <: Function} <: MOI.AbstractVectorSet
+    MOIIntention{F <: Function} <: MOI.AbstractVectorSet
 
-DOCSTRING
+Represents an intention set in the model.
 
-# Arguments:
-- `f::F`: DESCRIPTION
-- `dimension::Int`: DESCRIPTION
-- `MOIPredicate(f, dim = 0) = begin
-        #= none:5 =#
-        new{typeof(f)}(f, dim)
-    end`: DESCRIPTION
+# Arguments
+- `f::F`: A function representing the intention.
+- `dimension::Int`: The dimension of the vector set.
 """
-struct MOIPredicate{F <: Function} <: MOI.AbstractVectorSet
+struct MOIIntention{F <: Function} <: MOI.AbstractVectorSet
     f::F
     dimension::Int
 
-    MOIPredicate(f, dim = 0) = new{typeof(f)}(f, dim)
-end
-function MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIPredicate{F}}
-) where {F <: Function}
-    return true
-end
-function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
-        set::MOIPredicate{F}) where {F <: Function}
-    err = x -> convert(Float64, !set.f(x))
-    cidx = constraint!(optimizer, err, map(x -> x.value, vars.variables))
-    return CI{VOV, MOIPredicate{F}}(cidx)
+    MOIIntention(f, dim = 0) = new{typeof(f)}(f, dim)
 end
 
-Base.copy(set::MOIPredicate) = MOIPredicate(deepcopy(set.f), copy(set.dimension))
+"""
+    MOI.supports_constraint(::Optimizer, ::Type{VOV}, ::Type{MOIIntention{F}}) where {F <: Function}
+
+Check if the optimizer supports a given intention constraint.
+
+# Arguments
+- `::Optimizer`: The optimizer instance.
+- `::Type{VOV}`: The type of the variable.
+- `::Type{MOIIntention{F}}`: The type of the intention.
+
+# Returns
+- `Bool`: True if the optimizer supports the constraint, false otherwise.
+"""
+function MOI.supports_constraint(
+        ::Optimizer, ::Type{VOV}, ::Type{MOIIntention{F}}) where {F <: Function}
+    return true
+end
+
+"""
+    MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIIntention{F}) where {F <: Function}
+
+Add an intention constraint to the optimizer.
+
+# Arguments
+- `optimizer::Optimizer`: The optimizer instance.
+- `vars::MOI.VectorOfVariables`: The variables for the constraint.
+- `set::MOIIntention{F}`: The intention set defining the constraint.
+
+# Returns
+- `CI{VOV, MOIIntention{F}}`: The constraint index.
+"""
+function MOI.add_constraint(optimizer::Optimizer, vars::MOI.VectorOfVariables,
+        set::MOIIntention{F}) where {F <: Function}
+    err = x -> convert(Float64, !set.f(x))
+    cidx = constraint!(optimizer, err, map(x -> x.value, vars.variables))
+    return CI{VOV, MOIIntention{F}}(cidx)
+end
+
+"""
+    Base.copy(set::MOIIntention)
+
+Copy an intention set.
+
+# Arguments
+- `set::MOIIntention`: The intention set to be copied.
+
+# Returns
+- `MOIIntention`: A copy of the intention set.
+"""
+Base.copy(set::MOIIntention) = MOIIntention(deepcopy(set.f), copy(set.dimension))
 
 """
     Predicate{F <: Function} <: JuMP.AbstractVectorSet
 
-Assuming `X` is a (collection of) variables, `concept` a boolean function over `X`, and that a `model` is defined. In `JuMP` syntax we can create a constraint based on `concept` as follows.
+Deprecated: Use `Intention` instead.
 
-```julia
-@constraint(model, X in Predicate(concept))
-```
+Represents a predicate set in the model.
+
+# Arguments
+- `f::F`: A function representing the predicate.
 """
 struct Predicate{F <: Function} <: JuMP.AbstractVectorSet
     f::F
 end
-JuMP.moi_set(set::Predicate, dim::Int) = MOIPredicate(set.f, dim)
+
+"""
+    Intention{F <: Function} <: JuMP.AbstractVectorSet
+
+Represents an intention set in the model.
+
+# Arguments
+- `f::F`: A function representing the intention.
+"""
+struct Intention{F <: Function} <: JuMP.AbstractVectorSet
+    f::F
+end
+
+"""
+    JuMP.moi_set(set::Predicate, dim::Int) -> MOIIntention
+
+Convert a `Predicate` set to a `MOIIntention` set.
+
+# Arguments
+- `set::Predicate`: The predicate set to be converted.
+- `dim::Int`: The dimension of the vector set.
+
+# Returns
+- `MOIIntention`: The converted MOIIntention set.
+"""
+JuMP.moi_set(set::Predicate, dim::Int) = MOIIntention(set.f, dim)
+
+"""
+    JuMP.moi_set(set::Intention, dim::Int) -> MOIIntention
+
+Convert an `Intention` set to a `MOIIntention` set.
+
+# Arguments
+- `set::Intention`: The intention set to be converted.
+- `dim::Int`: The dimension of the vector set.
+
+# Returns
+- `MOIIntention`: The converted MOIIntention set.
+"""
+JuMP.moi_set(set::Intention, dim::Int) = MOIIntention(set.f, dim)
 
 ## SECTION - Test Items
 @testitem "Error and Predicate" begin
@@ -129,10 +204,10 @@ JuMP.moi_set(set::Predicate, dim::Int) = MOIPredicate(set.f, dim)
     @variable(model, 1≤Y[1:4]≤4, Int)
 
     @constraint(model, X in Error(x -> x[1] + x[2] + x[3] + x[4] == 10))
-    @constraint(model, Y in Predicate(x -> x[1] + x[2] + x[3] + x[4] == 10))
+    @constraint(model, Y in Intention(x -> x[1] + x[2] + x[3] + x[4] == 10))
 
     optimize!(model)
-    @info "Error and Predicate" value.(X) value.(Y)
+    @info "Error and Intention" value.(X) value.(Y)
     termination_status(model)
     @info solution_summary(model)
 end

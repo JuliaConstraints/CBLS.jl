@@ -54,12 +54,7 @@ struct NValues{F <: Function, T1 <: Number, T2 <: Number, V <: Vector{T2}} <:
     end
 end
 
-function NValues(; op::F = ==,
-        val::T1,
-        vals::V = Vector{Number}()) where {
-        F <: Function, T1 <: Number, T2 <: Number, V <: Vector{T2}}
-    return NValues(op, val, vals)
-end
+NValues(; op = ==, val, vals = Vector{Number}()) = NValues(op, val, vals)
 
 function JuMP.moi_set(set::NValues, dim::Int)
     vals = isnothing(set.vals) ? Vector{Number}() : set.vals
