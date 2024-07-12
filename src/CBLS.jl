@@ -49,7 +49,7 @@ export Maximum
 export MDDConstraint
 export Minimum
 export NValues
-export NoOverlap, NoOverlapNoZero, NoOverlapWithZero
+export NoOverlap#, NoOverlapNoZero, NoOverlapWithZero
 export Ordered
 export Regular
 export Sum

@@ -24,10 +24,18 @@ MOI.set(model::Optimizer, p::MOI.RawOptimizerAttribute, value) = set_option!(
     model, p.name, value)
 MOI.get(model::Optimizer, p::MOI.RawOptimizerAttribute) = get_option(model, p.name)
 
-function MOI.set(model::Optimizer, ::MOI.NumberOfThreads, value)
-    set_option!(model, "threads", isnothing(value) ? typemax(0) : value)
+function MOI.set(model::Optimizer, ::MOI.NumberOfThreads, value::Int)
+    set_option!(model, "threads", value)
 end
+function MOI.set(
+        model::Optimizer, ::MOI.NumberOfThreads, value::Union{AbstractVector, AbstractDict})
+    set_option!(model, "process_threads_map", value)
+end
+
 function MOI.get(model::Optimizer, ::MOI.NumberOfThreads)
-    nt = get_option(model, "threads")
-    return nt == typemax(0) ? nothing : nt
+    if workers() == 1
+        nt = get_option(model, "threads")
+        return nt == typemax(0) ? nothing : nt
+    end
+    return get_option(model, "process_threads_map")
 end
