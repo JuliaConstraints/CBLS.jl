@@ -1,7 +1,7 @@
 name = "CBLS"
 uuid = "a3809bfe-37bb-4d48-a667-bac4c6be8d90"
 authors = ["Jean-Francois Baffier"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 ConstraintCommons = "e37357d9-0691-492f-a822-e5ea6a920954"
@@ -24,8 +24,9 @@ JuMP = "1"
 Lazy = "0.15"
 LocalSearchSolvers = "0.4"
 MathOptInterface = "1"
-TestItems = "0.1"
-julia = "1.6"
+Pkg = "1"
+TestItems = "0.1, 1"
+julia = "1.9"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"

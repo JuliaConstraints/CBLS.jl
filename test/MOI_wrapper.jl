@@ -79,5 +79,5 @@ end
 
 end # module TestCBLS
 
-# This line at tne end of the file runs all the tests!
+# This line at the end of the file runs all the tests!
 TestCBLS.runtests()

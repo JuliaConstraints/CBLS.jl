@@ -1,4 +1,4 @@
-# Intention constraints emcompass any generic constraint. DistDifferent is implemented as an example of an intensional constraint.
+# Intention constraints encompass any generic constraint. DistDifferent is implemented as an example of an intensional constraint.
 
 """
     MOIDistDifferent <: MOI.AbstractVectorSet
