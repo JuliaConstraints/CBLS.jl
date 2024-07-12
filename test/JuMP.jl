@@ -21,6 +21,11 @@ end
     @test get_optimizer_attribute(model, "iteration") == 100
     set_time_limit_sec(model, 5.0)
     @test time_limit_sec(model) == 5.0
+    set_optimizer_attribute(model, "threads", 2)
+    @test get_optimizer_attribute(model, "threads") == 2
+    T = Dict(2 => 3, 3 => 1)
+    set_optimizer_attribute(model, "process_threads_map", T)
+    @test get_optimizer_attribute(model, "process_threads_map") == T
 
     @variable(model, 0≤x≤20, Int)
     @variable(model, y in DiscreteSet(0:20))
