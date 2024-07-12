@@ -33,9 +33,10 @@ function MOI.set(
 end
 
 function MOI.get(model::Optimizer, ::MOI.NumberOfThreads)
-    if workers() == 1
+    ptm = get_option(model, "process_threads_map")
+    if length(ptm) == 0 || (haskey(ptm, 1) && length(ptm) == 1)
         nt = get_option(model, "threads")
         return nt == typemax(0) ? nothing : nt
     end
-    return get_option(model, "process_threads_map")
+    return ptm
 end
