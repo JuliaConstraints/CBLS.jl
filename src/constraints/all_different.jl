@@ -42,6 +42,16 @@ function Base.convert(
     return MOIAllDifferent(T[], MOI.dimension(set))
 end
 
+function Base.convert(
+    ::Type{MOI.AllDifferent},
+    set::MOIAllDifferent,
+)
+    if !isempty(set.vals)
+        throw(InexactError(:convert, MOI.AllDifferent, set))
+    end
+    return MOI.AllDifferent(MOI.dimension(set))
+end
+
 """
 Global constraint ensuring that all the values of a given configuration are unique.
 
