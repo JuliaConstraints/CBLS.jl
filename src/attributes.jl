@@ -8,12 +8,13 @@ MOI.supports(::Optimizer, ::MOI.NumberOfThreads) = true
     MOI.set(model::Optimizer, ::MOI.TimeLimitSec, value::Union{Nothing,Float64})
 Set the time limit
 """
-function MOI.set(model::Optimizer, ::MOI.TimeLimitSec, value::Union{Nothing, Float64})
+function MOI.set(model::Optimizer, ::MOI.TimeLimitSec,
+        value::Union{Nothing, Float64, Tuple{Bool, Float64}})
     set_option!(model, "time_limit", isnothing(value) ? Inf : value)
 end
 function MOI.get(model::Optimizer, ::MOI.TimeLimitSec)
     tl = get_option(model, "time_limit")
-    return isinf(tl) ? nothing : tl
+    return isinf(tl[2]) ? nothing : tl[2]
 end
 
 """

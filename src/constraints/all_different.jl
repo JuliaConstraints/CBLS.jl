@@ -29,22 +29,22 @@ end
 Base.copy(set::MOIAllDifferent) = MOIAllDifferent(copy(set.vals), copy(set.dimension))
 
 function MOI.Bridges.Constraint.conversion_cost(
-    ::Type{MOIAllDifferent{T}},
-    ::Type{MOI.AllDifferent},
+        ::Type{MOIAllDifferent{T}},
+        ::Type{MOI.AllDifferent}
 ) where {T}
     return 1.0
 end
 
 function Base.convert(
-    ::Type{MOIAllDifferent{T}},
-    set::MOI.AllDifferent,
+        ::Type{MOIAllDifferent{T}},
+        set::MOI.AllDifferent
 ) where {T}
     return MOIAllDifferent(T[], MOI.dimension(set))
 end
 
 function Base.convert(
-    ::Type{MOI.AllDifferent},
-    set::MOIAllDifferent,
+        ::Type{MOI.AllDifferent},
+        set::MOIAllDifferent
 )
     if !isempty(set.vals)
         throw(InexactError(:convert, MOI.AllDifferent, set))
