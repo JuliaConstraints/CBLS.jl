@@ -20,7 +20,8 @@
     @testset "Piracies: CBLS" begin
         Aqua.test_piracies(CBLS;
             # Check with JuMP-dev
-            treat_as_own = [JuMP.build_variable, Base.copy, MathOptInterface.empty!]
+            treat_as_own = [JuMP.build_variable, Base.copy,
+                MathOptInterface.empty!, MathOptInterface.AbstractSet]
         )
     end
 

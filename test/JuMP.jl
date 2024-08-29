@@ -18,8 +18,9 @@ end
     model = Model(CBLS.Optimizer)
 
     set_optimizer_attribute(model, "iteration", 100)
-    @test get_optimizer_attribute(model, "iteration") == 100
+    @test get_optimizer_attribute(model, "iteration") == (false, 100)
     set_time_limit_sec(model, 5.0)
+    @info time_limit_sec(model)
     @test time_limit_sec(model) == 5.0
     set_optimizer_attribute(model, "threads", 2)
     @test get_optimizer_attribute(model, "threads") == 2

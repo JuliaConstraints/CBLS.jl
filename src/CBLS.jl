@@ -84,6 +84,14 @@ include("constraints/ordered.jl")
 include("constraints/regular.jl")
 include("constraints/sum.jl")
 
+include("set_conversion_bridge.jl")
+
+function MOI.get(::Optimizer, ::MOI.Bridges.ListOfNonstandardBridges)
+    return Type[
+        SetConversionBridge{Float64, MOIAllDifferent{Float64}},
+    ]
+end
+
 include("objectives.jl")
 include("results.jl")
 
