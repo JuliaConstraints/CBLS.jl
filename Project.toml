@@ -1,7 +1,7 @@
 name = "CBLS"
 uuid = "a3809bfe-37bb-4d48-a667-bac4c6be8d90"
 authors = ["Jean-Francois Baffier"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 ConstraintCommons = "e37357d9-0691-492f-a822-e5ea6a920954"
@@ -17,14 +17,14 @@ Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [compat]
-ConstraintCommons = "0.2, 0.3"
-ConstraintDomains = "0.3, 0.4"
-ConstraintProgrammingExtensions = "0.8"
-Constraints = "0.5"
+ConstraintCommons = "0.3.1"
+ConstraintDomains = "0.4.1"
+ConstraintProgrammingExtensions = "0.8.1"
+Constraints = "0.5.11"
 Intervals = "1"
 JuMP = "1"
 Lazy = "0.15"
-LocalSearchSolvers = "0.4"
+LocalSearchSolvers = "0.4.11"
 MathOptInterface = "1"
 Pkg = "1"
 TestItems = "0.1, 1"
