@@ -4,6 +4,7 @@ using Test
 const _TARGETED_TESTITEM_RUN = !isempty(strip(get(ENV, "CBLS_TEST_TAGS", "")))
 
 @testset "CBLS.jl" begin
+    include("keyword_evaluators.jl")
     if !_TARGETED_TESTITEM_RUN
         include("Aqua.jl")
         # Official applicable MOI tests and bounded lifecycle/solve regressions

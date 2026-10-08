@@ -1,3 +1,12 @@
+"Keep fixed constraint keywords concrete without changing the evaluator's full-cost contract."
+struct FixedKeywordError{F <: Function, P <: NamedTuple} <: Function
+    evaluator::F
+    parameters::P
+end
+function (error::FixedKeywordError)(values; keywords...)
+    error.evaluator(values; merge((;keywords...),error.parameters)...)
+end
+
 """
     MOIError{F <: Function} <: MOI.AbstractVectorSet
 

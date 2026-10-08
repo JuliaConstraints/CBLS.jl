@@ -1,0 +1,64 @@
+# Sum keyword allocation qualification — 8 October 2026
+
+Baseline: CBLS `3687ece072aa2dc17f4eee87eadd706d97ab6752`,
+LocalSearchSolvers `57c5aaff0c2714e42e3c2a4335617354d08120ef`,
+MetaStrategist `3c6ad5b057af4910bed99412ba24f7bc8d329587`.
+
+The Sum adapter now owns a concrete evaluator and fixed keyword tuple. Fixed
+keywords still override incoming keywords. It retains the original full-cost
+evaluation contract; no learned truth, penalty, validator, or incremental policy
+was replaced. MOI still copies parameter arrays before handing them to the adapter.
+
+`core_scenarios.jl` supplies independent ring-sum/objective oracles, real MOI
+optimization, two private typed MetaStrategist units, and 1,024 rejected and 1,024
+accepted eight-variable MetaMoves (plus 1,024 zero-state restoration commits).
+The fixed-work limit is independent of an unlimited wall-time budget.
+
+Julia 1.13.1; CPU affinity 0,2 (two distinct physical cores); Julia threads 2,
+GC threads 1, BLAS/OpenMP threads 1, precompile tasks 1. Tools were added offline
+to a separate temporary diagnostic environment. The frozen solver environment
+and benchmark worktree were read-only. The tool resolver selected Parsers 2.8.8
+in this environment; before/after used the same resolved solver dependencies.
+
+| Warm operation | Before bytes / objects | After bytes / objects | Before seconds (3 samples) | After seconds (3 samples) |
+|---|---:|---:|---|---|
+| initialize 32 variables / 32 constraints | 168,280 / 2,457 | 39,720 / 696 | .000190145, .000162997, .000162611 | .000128514, .000088613, .000085611 |
+| CBLS 256 steps | 15,913,584 / 246,177 | 1,403,296 / 34,415 | .009244760, .009393605, .009207122 | .001109156, .001097674, .001070165 |
+| two typed units, 256 steps each | 31,267,888 / 480,284 | 2,450,704 / 59,847 | .009219535, .009365314, .008797275 | .001172043, .001216401, .001150298 |
+| 1,024 MetaMove trials | 79,626,240 / 1,208,320 | 6,160,384 / 155,648 | .060862276, .041892570, .041759782 | .001558501, .001565423, .002634752 |
+
+Object counts are `@timed.gcstats.poolalloc + bigalloc`. The warm samples above
+reported zero compile time, zero measured GC time, and zero lock conflicts.
+Two-worker cold observations had one lock conflict. These are operational
+matched-work measurements on a machine running other work, not controlled
+scaling evidence or a comparative benchmark campaign.
+
+Cold CBLS first-operation scope excluded fixture construction: before 3.718 s,
+877.7 MB; after 4.337 s, 954.7 MB. Compilation dominated; no cold-latency
+improvement is claimed. PerfChecker's separate latency lifecycle observation
+afterwards was 1.997 s source loading, 9.974 s first full case, .001526 s warm
+full case. These scopes and instrumentation differ.
+
+Validation: 2,378 keyword/original-truth/ownership checks and 45,825 checks in
+the CBLS moi/core regression run passed. All four operation oracles passed.
+PerfChecker benchmark, CPU-profile and full allocation-profile collectors
+completed with passing correctness oracles. Chairmarks was installed in the
+diagnostic environment and remained to be exercised at this increment.
+
+PerfChecker 1.0.0 analyzer inventory: JET, AllocCheck, Aqua, SnoopCompile,
+latency, GC, locks, memory, heap. JET 0.12.3 and AllocCheck 0.2.6 executed the
+solve specialization: 645 inference findings and 625 possible-allocation
+findings, including cold MOI registry/lifecycle dispatch and runtime internals.
+This is not inference-clean or statically allocation-free. SnoopCompile 3.2.9
+measured 46.258 s inclusive first-lifecycle inference under instrumentation.
+GC, locks, latency and memory completed with passing correctness; three warm
+GC/lock samples had no collection or lock conflict. Reachable optimizer state
+was 55,645 bytes before solving and 107,160 bytes afterwards. Heap was
+available but not captured: operation allocation stacks identified the adapter
+without a process-wide snapshot. Aqua executed and reported a package-quality
+failure; its exact existing check is investigated in the next increment.
+
+Remaining measured costs include Constraints-owned sum temporaries, cold MOI
+registry dispatch, repeated initialization input vectors, receipt serialization
+and repeated evaluator-type display during prepared-unit reset. Raw stacks and
+bulk reports are not committed.

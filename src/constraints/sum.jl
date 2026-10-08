@@ -24,15 +24,9 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOISum)
-    function e(x; kwargs...)
-        d = if isempty(set.pair_vars)
-            Dict(:op => set.op, :val => set.val)
-        else
-            Dict(:op => set.op, :pair_vars => set.pair_vars, :val => set.val)
-        end
-        new_kwargs = merge(kwargs, d)
-        return error_f(USUAL_CONSTRAINTS[:sum])(x; new_kwargs...)
-    end
+    parameters = isempty(set.pair_vars) ? (;op=set.op,val=set.val) :
+        (;op=set.op,pair_vars=set.pair_vars,val=set.val)
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:sum]),parameters)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV,
         MOISum{
