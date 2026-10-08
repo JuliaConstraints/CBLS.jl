@@ -21,8 +21,9 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, ::MOIDistDifferent)
-    function e(x; kwargs...)
-        return error_f(USUAL_CONSTRAINTS[:dist_different])(x)
+    e = let evaluator = error_f(USUAL_CONSTRAINTS[:dist_different])
+        # This adapter historically ignores all caller keywords, including X.
+        (x; kwargs...) -> evaluator(x)
     end
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIDistDifferent}(cidx)

@@ -176,3 +176,36 @@ SnoopCompile inference was 6.389 s. Separate source/first/warm latency scopes
 were 1.810/5.422/.002294 s. Three GC and lock samples had no collection,
 compilation or conflicts. Reachable fixture state stayed 21,112 bytes, or 21,120
 bytes with its scalar result. Raw instrumentation reports are not committed.
+
+## Distance-difference evaluator binding
+
+The distance-difference adapter now obtains its original evaluator once during
+registration. It retains full-cost policy and its historical behavior of
+ignoring every caller keyword, including `X`. `distance_scenarios.jl` checks
+2,048 registered evaluations against an independent absolute-distance oracle
+and a 32-variable, eight-group model with exactly 128 solver steps. Each solve
+restores the strategy and seed 41; final assignments match exactly.
+
+The baseline is CBLS `0c3618f2c32115a95e839b5c2b88e0bce1abeaf1`, with unchanged
+LocalSearchSolvers `d26a070f8d87176a8f8bc9c172c59c683b3c2bd5`, MetaStrategist
+`f64bfa4d68f3f80b08eee473a3bfc90f56e0fb5d` and resolved dependencies. Before and
+after samples use the same two-core limits. Collection occurs outside each
+timed sample; measured compilation and collection time are zero.
+
+| Warm matched work | Before bytes / objects | After bytes / objects | Before seconds (3 samples) | After seconds (3 samples) |
+|---|---:|---:|---|---|
+| 2,048 registered evaluations | 65,584 / 4,098 | 64 / 3 | .000077193, .000086076, .000099779 | .000004448, .000004458, .000003431 |
+| MOI solve, 128 steps | 542,016 / 22,569 | 208,480 / 4,768 | .001453672, .001444935, .001395475 | .000879004, .000703786, .000798982 |
+
+These are fixed-work operational observations on a shared machine. All 97,459
+CBLS moi/core checks and full Aqua pass, including 713 new checks covering
+integer and fractional truth, ignored keywords, unchanged borrowed storage,
+input shape behavior and model cloning. All four PerfChecker collectors pass.
+BenchmarkTools records 16 bytes / one scalar-result object; Chairmarks and the
+full allocation profile record zero bytes / objects for the evaluation case.
+
+JET optimization findings fall from two to zero; AllocCheck findings fall from
+three to zero for the concrete evaluation operation. Three GC and lock samples
+show only the constant scalar-result object, with no compilation, collection
+or conflicts. Reachable fixture state remains 1,240 bytes, or 1,248 bytes with
+its result. Raw reports are not committed.

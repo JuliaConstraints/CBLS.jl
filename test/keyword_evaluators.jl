@@ -98,4 +98,25 @@ end
     @test result.X===workspace
     @test result.val==7 && result.extra==:forwarded
 end
+
+@testset "Distance-difference binding preserves full truth and ignored keywords" begin
+    optimizer,error=evaluator(CBLS.MOIDistDifferent(4))
+    @test !Constraints.supports_incremental(error)
+    for domain in (-2:2,(-0.5,0.0,0.5))
+        for assignment in Iterators.product(ntuple(_->domain,4)...)
+            values=collect(assignment)
+            expected=Float64(abs(values[1]-values[2])==abs(values[3]-values[4]))
+            @test error(values;X=nothing)==expected
+        end
+    end
+    callback=raw_evaluator(error)
+    workspace=fill(7.0,4,32)
+    @test callback([0,1,1,3];X=workspace,unused=:ignored)==0.0
+    @test all(==(7.0),workspace)
+    @test callback([0,1,2,3];X=:ignored,unused=1)==1.0
+    @test callback([0,1,1,3,99])==0.0
+    @test_throws BoundsError callback([0,1,2])
+    cloned=deepcopy(optimizer.backend_model)
+    @test LS.get_constraint(cloned,1).f([0,1,1,3];X=nothing)==0.0
+end
 end
