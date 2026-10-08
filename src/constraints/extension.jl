@@ -25,10 +25,7 @@ end
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIExtension)
     pair_vars = set.pair_vars
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:pair_vars => set.pair_vars))
-        return error_f(USUAL_CONSTRAINTS[:extension])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:extension]),(;pair_vars=set.pair_vars))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     ET = eltype(first(typeof(pair_vars) <: Tuple ? first(pair_vars) : pair_vars))
     return CI{VOV, MOIExtension{ET, typeof(pair_vars)}}(cidx)
@@ -81,10 +78,7 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOISupports)
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:pair_vars => set.pair_vars))
-        return error_f(USUAL_CONSTRAINTS[:supports])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:supports]),(;pair_vars=set.pair_vars))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     ET = eltype(first(set.pair_vars))
     return CI{VOV, MOISupports{ET, typeof(set.pair_vars)}}(cidx)
@@ -139,10 +133,7 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIConflicts)
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:pair_vars => set.pair_vars))
-        return error_f(USUAL_CONSTRAINTS[:conflicts])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:conflicts]),(;pair_vars=set.pair_vars))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     ET = eltype(first(set.pair_vars))
     return CI{VOV, MOIConflicts{ET, typeof(set.pair_vars)}}(cidx)

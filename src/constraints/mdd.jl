@@ -23,10 +23,7 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIMultivaluedDecisionDiagram)
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:language => set.language))
-        return error_f(USUAL_CONSTRAINTS[:mdd])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:mdd]),(;language=set.language))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIMultivaluedDecisionDiagram{typeof(set.language)}}(cidx)
 end

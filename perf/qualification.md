@@ -126,3 +126,53 @@ inference was 4.944 s for this case. Separate latency source/first/warm scopes
 were 1.945/2.529/.000957 s. Three GC and lock samples had no collection,
 compilation or lock conflicts. Reachable fixture size stayed 1,320 bytes, with
 1,328 bytes including its scalar result. Raw reports remain uncommitted.
+
+## Structural and scheduling keyword adapters
+
+Channel, Circuit, Cumulative, Instantiation, Extension, Supports, Conflicts,
+Regular and MDD now bind their original evaluator and keyword tuple once.
+Circuit's zero target still becomes the variable count; Channel's zero index
+still becomes `nothing`. Empty cumulative task data is omitted, so a caller's
+task data can still supply that optional parameter. Full-cost policy, scores,
+keyword precedence and MOI ownership remain unchanged.
+
+`structural_scenarios.jl` supplies independent inverse-channel, single-cycle,
+half-open task-load, tuple-membership and language oracles. It evaluates fourteen
+registered variants on two inputs, 1,024 times (28,672 evaluations). Its mixed
+56-variable model repeats four constraints per group and solves exactly 128
+steps with the same restored strategy and seed before each observation. Final
+assignments were identical before and after. The evaluation harness maps each
+callback's two scalar scores before reducing them, avoiding inference recursion
+across fourteen heterogeneous callback types.
+
+The baseline is CBLS `3687ece072aa2dc17f4eee87eadd706d97ab6752`, with the same
+LocalSearchSolvers `35671c8daba2a293dd431dfe80f59da73bc7596d`, MetaStrategist
+`3d891e069e0e9993c7239e3b7091833b6756529c` and resolved diagnostic dependencies
+as the after environment. Only CBLS's source path differs. Resource limits are
+the two-core limits above. Collection was requested before, outside each timed
+sample; all listed operations had zero measured compilation and collection.
+
+| Warm matched work | Before bytes / objects | After bytes / objects | Before seconds (3 samples) | After seconds (3 samples) |
+|---|---:|---:|---|---|
+| 28,672 structural evaluations | 55,541,808 / 742,402 | 3,113,024 / 57,347 | .029098418, .029425364, .029602653 | .001676185, .001681670, .001702936 |
+| mixed MOI solve, 128 steps | 14,518,904 / 208,711 | 774,288 / 18,379 | .013249530, .012802723, .013258374 | .002598206, .002343664, .002331589 |
+
+These are operational fixed-work observations on a shared machine. The solve
+baseline also observed 14,453,328 bytes / 208,710 objects in earlier samples;
+this one-object variation does not affect the assignment or work count.
+
+All 33,947 new checks passed against both source versions, including exhaustive
+original-truth checks, fractional and zero-duration scheduling, default/override
+precedence and mutation of caller-owned arrays and language tables after MOI
+registration. All 96,746 CBLS moi/core regression checks and full Aqua passed.
+All four PerfChecker collectors passed. BenchmarkTools and Chairmarks measured
+3,112,960–3,112,976 bytes / 57,344–57,345 objects for the evaluation operation;
+the full allocation profile agreed with those independent operation totals.
+
+JET optimization findings fell from 27 to zero for the final concrete operation.
+AllocCheck reported 14 possible allocations, including the original truth
+evaluators' temporary arrays; this operation is not allocation-free. Inclusive
+SnoopCompile inference was 6.389 s. Separate source/first/warm latency scopes
+were 1.810/5.422/.002294 s. Three GC and lock samples had no collection,
+compilation or conflicts. Reachable fixture state stayed 21,112 bytes, or 21,120
+bytes with its scalar result. Raw instrumentation reports are not committed.

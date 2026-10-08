@@ -23,10 +23,7 @@ end
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIChannel)
     id = iszero(set.id) ? nothing : set.id
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:dim => set.dim, :id => id))
-        return error_f(USUAL_CONSTRAINTS[:channel])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:channel]),(;dim=set.dim,id))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIChannel{typeof(set.dim), typeof(set.id)}}(cidx)
 end

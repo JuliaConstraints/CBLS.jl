@@ -22,10 +22,7 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIInstantiation)
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:pair_vars => set.pair_vars))
-        return error_f(USUAL_CONSTRAINTS[:instantiation])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:instantiation]),(;pair_vars=set.pair_vars))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIInstantiation{eltype(set.pair_vars), typeof(set.pair_vars)}}(cidx)
 end

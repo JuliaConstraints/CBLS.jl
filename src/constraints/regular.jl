@@ -20,10 +20,7 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIRegular)
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:language => set.language))
-        return error_f(USUAL_CONSTRAINTS[:regular])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:regular]),(;language=set.language))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIRegular{typeof(set.language)}}(cidx)
 end

@@ -23,10 +23,7 @@ end
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOICircuit)
     val = iszero(set.val) ? length(vars.variables) : set.val
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:op => set.op, :val => val))
-        return error_f(USUAL_CONSTRAINTS[:circuit])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:circuit]),(;op=set.op,val))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOICircuit{typeof(set.op), typeof(set.val)}}(cidx)
 end
