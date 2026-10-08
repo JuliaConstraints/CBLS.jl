@@ -24,15 +24,8 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIOrdered)
-    function e(x; kwargs...)
-        d = if isempty(set.pair_vars)
-            Dict(:op => set.op)
-        else
-            Dict(:op => set.op, :pair_vars => set.pair_vars)
-        end
-        new_kwargs = merge(kwargs, d)
-        return error_f(USUAL_CONSTRAINTS[:ordered])(x; new_kwargs...)
-    end
+    parameters = isempty(set.pair_vars) ? (;op=set.op) : (;op=set.op,pair_vars=set.pair_vars)
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:ordered]),parameters)
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{
         VOV, MOIOrdered{typeof(set.op), eltype(set.pair_vars), typeof(set.pair_vars)}}(cidx)

@@ -24,11 +24,8 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIAllEqual)
-    function e(x; kwargs...)
-        new_kwargs = merge(
-            kwargs, Dict(:op => set.op, :pair_vars => set.pair_vars, :val => set.val))
-        return error_f(USUAL_CONSTRAINTS[:all_equal])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:all_equal]),
+        (;op=set.op,pair_vars=set.pair_vars,val=set.val))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIAllEqual{typeof(set.op), eltype(set.pair_vars), typeof(set.val)}}(cidx)
 end

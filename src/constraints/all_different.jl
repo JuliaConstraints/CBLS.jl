@@ -18,10 +18,7 @@ end
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIAllDifferent)
     vals = isempty(set.vals) ? nothing : set.vals
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:vals => vals))
-        return error_f(USUAL_CONSTRAINTS[:all_different])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:all_different]),(;vals))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIAllDifferent{eltype(set.vals)}}(cidx)
 end

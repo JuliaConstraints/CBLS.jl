@@ -80,3 +80,49 @@ not apply to these CPU workloads. Linux `perf` is installed but its task-clock
 probe failed with no supported events; `perf_event_paranoid` is 4. No system
 security settings were changed. Valgrind and heaptrack are absent. Runtime
 instrumentation findings are scoped to the operation each tool actually ran.
+
+## Six additional fixed-keyword adapters
+
+AllDifferent, AllEqual, Ordered, Element, Minimum and Maximum now use the same
+concrete full-cost wrapper as Sum. Empty Ordered offsets are still omitted;
+empty AllDifferent exclusions and Element index zero still map to `nothing`.
+Fixed parameters continue to override caller parameters. MOI array ownership,
+model copying, validators, numerical scores and incremental-policy selection
+are preserved.
+
+`adapter_scenarios.jl` evaluates all six real registered MOI adapters on two
+inputs, 1,024 times (12,288 evaluations), with independent truth oracles. Its
+24-variable mixed solver case repeats four constraints in each of six disjoint
+groups and runs exactly 128 steps. Each operation restores the initial strategy
+snapshot before resetting seed 41, preventing previous solves from changing the
+work trajectory. Final assignments were identical before and after.
+
+The isolated adapter baseline used CBLS `3687ece072aa2dc17f4eee87eadd706d97ab6752`
+with LocalSearchSolvers `a6d1c608dfb5bdec73425da5596c15b94fade7e8` and
+MetaStrategist `3d891e069e0e9993c7239e3b7091833b6756529c`. Only CBLS's source path
+changed in the after environment; tools and solver dependencies match.
+
+| Warm matched work | Before bytes / objects | After bytes / objects | Before seconds (3 samples) | After seconds (3 samples) |
+|---|---:|---:|---|---|
+| 12,288 adapter evaluations | 25,165,872 / 366,594 | 1,998,912 / 53,251 | .012853894, .012713952, .012804797 | .000653554, .000639375, .000656320 |
+| mixed MOI solve, 128 steps | 8,665,024 / 131,577 | 295,680 / 6,634 | .006043716, .005970325, .006013204 | .001216014, .000996157, .001214122 |
+
+Warm samples had zero measured compile and collection time. Other machine work
+continued; these are operational fixed-work observations, not a comparative
+campaign or scaling result. Residual evaluation allocations include original
+Constraints-owned temporary arrays, rather than per-call parameter dictionaries.
+
+All 62,799 CBLS moi/core checks passed, including 16,962 new independent
+exhaustive truth checks and 12 array ownership/deepcopy checks. Full Aqua checks
+passed. PerfChecker BenchmarkTools, Chairmarks, CPU profile and full allocation
+profile collectors all completed the evaluation case with passing oracles.
+They measured approximately 1,998,848–1,998,864 bytes / 53,248–53,249 objects;
+allocation profiling sampled both evaluations and records their weight separately.
+
+Concrete evaluation-operation JET findings fell from 19 to zero. AllocCheck
+findings fell from 8 to 6, including possible original truth-evaluator temporary
+allocations; no static allocation-free claim is made. SnoopCompile inclusive
+inference was 4.944 s for this case. Separate latency source/first/warm scopes
+were 1.945/2.529/.000957 s. Three GC and lock samples had no collection,
+compilation or lock conflicts. Reachable fixture size stayed 1,320 bytes, with
+1,328 bytes including its scalar result. Raw reports remain uncommitted.

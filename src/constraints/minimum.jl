@@ -22,10 +22,7 @@ end
 
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIMinimum)
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:op => set.op, :val => set.val))
-        return error_f(USUAL_CONSTRAINTS[:minimum])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:minimum]),(;op=set.op,val=set.val))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIMinimum{typeof(set.op), typeof(set.val)}}(cidx)
 end

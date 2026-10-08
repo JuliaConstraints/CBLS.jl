@@ -25,10 +25,7 @@ end
 function _add_constraint_backend!(
         optimizer::Optimizer, vars::MOI.VectorOfVariables, set::MOIElement)
     id = iszero(set.id) ? nothing : set.id
-    function e(x; kwargs...)
-        new_kwargs = merge(kwargs, Dict(:id => id, :op => set.op, :val => set.val))
-        return error_f(USUAL_CONSTRAINTS[:element])(x; new_kwargs...)
-    end
+    e = FixedKeywordError(error_f(USUAL_CONSTRAINTS[:element]),(;id,op=set.op,val=set.val))
     cidx = constraint!(optimizer, e, map(x -> x.value, vars.variables))
     return CI{VOV, MOIElement{typeof(set.id), typeof(set.op), typeof(set.val)}}(cidx)
 end
