@@ -62,3 +62,21 @@ Remaining measured costs include Constraints-owned sum temporaries, cold MOI
 registry dispatch, repeated initialization input vectors, receipt serialization
 and repeated evaluator-type display during prepared-unit reset. Raw stacks and
 bulk reports are not committed.
+
+## Subsequent analyzer qualification
+
+The Aqua failure was missing compatibility bounds for the existing Aqua, Test
+and TestItemRunner extras. Bounds were added; full Aqua checks then passed.
+All four PerfChecker collectors (BenchmarkTools, Chairmarks, CPU profile and
+allocation profile) were exercised on the LocalSearchSolvers owned-unit/reset
+cases. All nine native analyzers were exercised across the solver and receipt
+cases. The receipt heap analyzer captured a redacted process snapshot in a
+temporary reports directory, which was removed after recording aggregate size
+and digest. This does not imply the CBLS hot loop is inference-clean.
+
+The installed PerfChecker catalog also lists external and GPU integrations as
+candidates. They are not native qualified collectors. GPU/accelerator tools do
+not apply to these CPU workloads. Linux `perf` is installed but its task-clock
+probe failed with no supported events; `perf_event_paranoid` is 4. No system
+security settings were changed. Valgrind and heaptrack are absent. Runtime
+instrumentation findings are scoped to the operation each tool actually ran.

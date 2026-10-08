@@ -17,6 +17,9 @@ Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [compat]
+Aqua = "0.8"
+Test = "1"
+TestItemRunner = "1"
 ConstraintCommons = "0.3.1"
 ConstraintDomains = "0.4.1"
 ConstraintProgrammingExtensions = "0.8.1"
