@@ -288,3 +288,15 @@ produce the same score-stream SHA-256:
 `1d622acb44baaea023b2cabd6a92dec181fe24fb134085026c7a5e4c204977b5`.
 Their caller-provided workspaces retain every sentinel value. This extends the
 result-preservation evidence to deeper trees and numeric boundary cases.
+
+
+## Isolated package test dependency, 2026-10-09
+
+The regression fixtures import Random, which was available in the shared
+qualification environment but missing from the isolated package test target.
+Random is now declared in test extras, compatibility and the test target.
+Runtime dependencies and assertions are unchanged from 582e3ef71ff08b7123c9b8433dfccaffe4e12d2e.
+The complete standard Pkg.test("CBLS"; allow_reresolve=false) passes
+102,836 assertions including Aqua with offline resolution, Julia 1.13.1,
+CPUs 0/2, two Julia threads and one GC thread. LocalSearchSolvers includes the
+qualified short floating sum source; other dependency sources remain unchanged.
