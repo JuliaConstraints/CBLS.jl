@@ -1,7 +1,13 @@
 # Compilation of positional arguments happens once, outside the search loop.
 struct CoreConstant{T}; value::T; end
 struct CoreArray{A}; arguments::A; end
-struct CoreExpression{A}; operator::Symbol; arguments::A; end
+struct CoreExpression{O,A}
+    operator::Symbol
+    arguments::A
+    # Keep the symbol as metadata while specializing each prepared operator.
+    CoreExpression(operator::Symbol, arguments::A) where A =
+        new{operator,A}(operator, arguments)
+end
 
 _bind_core(value) = CoreConstant(value)
 _bind_core(value::CPE.XCSP3Position) = value
@@ -30,19 +36,22 @@ _bind_core(value::MOI.AbstractVectorSet) = CoreConstant(_xcsp3_evaluator(copy(va
 @inline _resolve_core(values::Tuple, assignment) = map(x -> _resolve_core(x, assignment), values)
 @inline _resolve_core(values::NamedTuple, assignment) = map(x -> _resolve_core(x, assignment), values)
 _resolve_core(value::CoreArray, assignment) = map(x -> _resolve_core(x, assignment), value.arguments)
-function _resolve_core(value::CoreExpression, assignment)
+@inline function _resolve_core(value::CoreExpression{O}, assignment) where O
     args = value.arguments
-    if value.operator == :if
-        branch = Bool(_resolve_core(args[1], assignment)) ? 2 : 3
-        return _resolve_core(args[branch], assignment)
-    elseif value.operator == :and
+    if O == :if
+        if Bool(_resolve_core(args[1], assignment))
+            return _resolve_core(args[2], assignment)
+        else
+            return _resolve_core(args[3], assignment)
+        end
+    elseif O == :and
         return all(x -> Bool(_resolve_core(x, assignment)), args)
-    elseif value.operator == :or
+    elseif O == :or
         return any(x -> Bool(_resolve_core(x, assignment)), args)
-    elseif value.operator == :imp
+    elseif O == :imp
         return !Bool(_resolve_core(args[1], assignment)) || Bool(_resolve_core(args[2], assignment))
     end
-    return Constraints.core_expression(value.operator, _resolve_core(args, assignment))
+    return @inline Constraints.core_expression(O, _resolve_core(args, assignment))
 end
 
 struct XCSP3StructuralEvaluator{A, E} <: Function

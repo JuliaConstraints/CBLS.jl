@@ -209,3 +209,71 @@ three to zero for the concrete evaluation operation. Three GC and lock samples
 show only the constant scalar-result object, with no compilation, collection
 or conflicts. Reachable fixture state remains 1,240 bytes, or 1,248 bytes with
 its result. Raw reports are not committed.
+
+## Prepared XCSP3 expression operators
+
+Prepared expression nodes now specialize their operator while retaining its
+symbol as metadata. The existing shared arithmetic implementation is inlined
+at the call site. Conditional expressions return from explicit lazy branches,
+so indexing a heterogeneous argument tuple no longer boxes its selected entry.
+Short-circuit behavior, original scores, undefined-arithmetic penalties,
+argument order and ownership remain unchanged. Prepared evaluator type names
+include the operator parameter; receipts describing their actual types change
+accordingly. This does not change the canonical encoding implementation.
+
+`expression_scenarios.jl` registers five three-variable expression trees through
+MOI: addition equality, quadratic inequality, mixed integer/Boolean conditional,
+guarded remainder and implication. Each operation performs 6,144 evaluations
+against independent truth functions. The solve case combines all five trees in
+eight groups and runs exactly 128 steps with restored strategy and seed 41.
+Its final assignment and error 26 match before and after; it does not find a
+feasible solution. Three separate audit runs with seeds 41–43 preserve all
+3,563 events, candidate scores, final assignments and subsequent 64-word RNG
+samples exactly. Clocks and process identifiers are excluded from trace hashes.
+
+The isolated baseline is CBLS `2c453ddee7f3af7433573969916caec1918fe8d4`, with
+unchanged LocalSearchSolvers `bcc516b6fa1d3edc9732bebb38a009719491c8d1`,
+MetaStrategist `ba019deede736e436e893be187e517fd5a1ce23c`, frozen shared constraint
+packages and resolved diagnostic dependencies. Only the CBLS source path differs.
+Both environments use CPUs 0 and 2, two Julia threads, one GC thread and one
+BLAS/OpenMP worker. Five warmed observations per case collect outside the timed
+operation; measured compilation and GC time are zero.
+
+| Warm matched work | Before bytes / objects | After bytes / objects |
+|---|---:|---:|
+| 6,144 addition-equality evaluations | 589,840 / 30,721 | 32 / 2 |
+| 6,144 quadratic-inequality evaluations | 786,448 / 36,865 | 32 / 2 |
+| 6,144 conditional evaluations | 1,245,200 / 40,961 | 32 / 2 |
+| 6,144 guarded-remainder evaluations | 524,304 / 28,673 | 32 / 2 |
+| 6,144 implication evaluations | 458,768 / 26,625 | 32 / 2 |
+| mixed MOI solve, 128 steps | 1,169,616 / 46,620 | 257,104 / 5,346 |
+
+Observed conditional-operation times span .001672–.001726 s before and
+.0000692–.0000739 s after. The solve spans .003622–.007415 s before and
+.001100–.001136 s after. These are operational fixed-work observations on a
+shared machine, with no controlled throughput or search-quality claim.
+
+All 102,727 CBLS moi/core regressions and full Aqua pass. The 5,268 new checks
+also pass against the prior source version: all 28 operators have independent
+integer and fractional value oracles, registered truth covers lazy branches,
+and ownership checks cover caller mutation, repeated variable scopes, model
+copies and fresh positional arrays. Arithmetic errors retain their penalty;
+shape and programming errors still propagate.
+
+All four native PerfChecker collectors pass for all six scenarios. For each
+evaluation operation, BenchmarkTools records one 16-byte scalar-result object;
+Chairmarks and the full allocation profile record zero bytes and objects.
+Fresh solve collector scopes record 257,328–260,048 bytes and 5,351–5,377
+objects; profile allocation bytes are 260,048 with 5,351 recorded objects.
+These fresh lifecycle scopes differ from the repeatedly warmed fixture above.
+The solve and arbitrary expression lifecycles are not allocation-free.
+
+JET findings fall from 23/29/30/36/36 to zero for the five concrete evaluation
+operations. AllocCheck findings fall from 36/55/52/50/50 to zero. All nine native
+diagnostic adapters complete; Aqua's adapter reports package quality separately
+from scenario correctness. For the conditional case, inclusive SnoopCompile
+inference is 3.047 s, and separate load/first-lifecycle/warm-lifecycle latency
+scopes are 1.831/1.921/.000273 s. Three GC and lock observations have only the
+16-byte result object, with no compilation, collection or observed conflicts.
+Reachable fixture state stays 1,128 bytes, or 1,136 with its result. The redacted
+heap snapshot is removed after inspection. Raw reports are not committed.
