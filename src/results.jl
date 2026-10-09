@@ -25,8 +25,10 @@ function MOI.get(opt::Optimizer, attr::MOI.ConstraintPrimal, index::CI)
 end
 function MOI.get(opt::Optimizer, attr::MOI.ObjectiveValue)
     MOI.check_result_index_bounds(opt, attr)
+    # JuMP's default model expects a Float64 result; keep native callback
+    # arithmetic in _objective_value and convert only at the result boundary.
     return opt.objective_sense == MOI.FEASIBILITY_SENSE || isnothing(opt.objective) ?
-        0.0 : _objective_value(opt.objective, best_values(opt))
+        0.0 : Float64(_objective_value(opt.objective, best_values(opt)))
 end
 # A heuristic incumbent is not a proven global objective bound.
 MOI.get(opt::Optimizer, ::MOI.ObjectiveBound) = opt.objective_sense == MOI.MAX_SENSE ? Inf : -Inf
