@@ -277,3 +277,14 @@ scopes are 1.831/1.921/.000273 s. Three GC and lock observations have only the
 16-byte result object, with no compilation, collection or observed conflicts.
 Reachable fixture state stays 1,128 bytes, or 1,136 with its result. The redacted
 heap snapshot is removed after inspection. Raw reports are not committed.
+
+Additional nested-expression validation on 2026-10-09 registers 21 mixed trees
+through MOI, combining arithmetic with nested conditional, conjunction and
+implication branches. Each tree receives 1,076 assignments: integer and floating
+Cartesian products, signed zero, infinities, NaN, and four extreme-integer cases.
+An independent Julia interpreter checks all 22,596 evaluation results, including
+undefined arithmetic. The previous `2c453dd` and updated `93e83b6` implementations
+produce the same score-stream SHA-256:
+`1d622acb44baaea023b2cabd6a92dec181fe24fb134085026c7a5e4c204977b5`.
+Their caller-provided workspaces retain every sentinel value. This extends the
+result-preservation evidence to deeper trees and numeric boundary cases.
